@@ -4,7 +4,6 @@ import Bath from '@/icons/Bath';
 import Scissors from '@/icons/Scissors';
 import ScissorsLineDashed from '@/icons/ScissorsLineDashed';
 import { ArrowRight } from 'lucide-react';
-
 import { cn } from '@/lib/utils';
 
 const iconMappings = [
@@ -13,7 +12,6 @@ const iconMappings = [
     { keywords: ['cut', 'trim', 'style', 'haircut', 'scissor'], component: Scissors },
     { keywords: ['nail', 'claw', 'paw'], component: ScissorsLineDashed }
 ];
-
 const fallbackIcons = [PetIcon, Bath, Scissors, ScissorsLineDashed];
 
 const getIconForService = (service: any) => {
@@ -31,7 +29,6 @@ export default function ServicesSection({ data }: { data: any }) {
     if (!data) return null;
 
     const services = data.items || [];
-    const cardDelays = ["delay-0", "delay-150", "delay-300", "delay-500"];
     const totalServices = services.length;
 
     const getGridClasses = (count: number) => {
@@ -44,16 +41,23 @@ export default function ServicesSection({ data }: { data: any }) {
     };
 
     return (
-        <section className="bg-[var(--bgAlt)] py-20 w-full overflow-hidden">
+        <section 
+            className="py-20 w-full overflow-hidden"
+            style={{ backgroundColor: data.bg }}
+        >
             <div className="max-w-7xl mx-auto px-6 flex flex-col items-center">
 
                 <div className="flex flex-col items-center text-center max-w-[560px] mb-12 lg:mb-[72px]">
-                    <h2 className="text-[var(--text)] font-medium text-4xl md:text-[48px] leading-[1.2] tracking-[-1.5px] mb-4">
-                        {data.heading}
-                    </h2>
-                    <p className="text-[var(--textMuted)] text-base md:text-[18px] leading-[1.6]">
-                        {data.description}
-                    </p>
+                    <h2 
+                        className="font-medium text-4xl md:text-[48px] leading-[1.2] tracking-[-1.5px] mb-4"
+                        style={{ color: data.headingColor }}
+                        dangerouslySetInnerHTML={{ __html: data.heading || "" }}
+                    />
+                    <p 
+                        className="text-base md:text-[18px] leading-[1.6]"
+                        style={{ color: data.descColor }}
+                        dangerouslySetInnerHTML={{ __html: data.description || "" }}
+                    />
                 </div>
 
                 <div className={cn("grid gap-6 w-full mb-12", getGridClasses(totalServices))}>
@@ -62,29 +66,47 @@ export default function ServicesSection({ data }: { data: any }) {
 
                         return (
                             <div key={index} className="h-full">
-                                <div className="group flex flex-col h-full bg-[var(--bg)] border border-[var(--border)] rounded-2xl p-7 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-
+                                <div 
+                                    className="group flex flex-col h-full border rounded-2xl p-7 transition-all duration-300 hover:shadow-md hover:-translate-y-1"
+                                    style={{ backgroundColor: data.cardBg, borderColor: data.cardBorder }}
+                                >
                                     <div className="mb-[37px]">
-                                        <Icon className="w-11 h-11 text-[var(--primary)] stroke-[1.5]" />
+                                        <Icon 
+                                            className="w-11 h-11 stroke-[1.5]" 
+                                            style={{ color: data.iconColor }} 
+                                        />
                                     </div>
 
                                     <div className="flex flex-col flex-grow justify-between gap-[30px]">
                                         <div>
-                                            <h3 className="text-[var(--text)] font-medium text-[20px] leading-[1.2] tracking-[-0.5px] mb-[10px]">
+                                            <h3 
+                                                className="font-medium text-[20px] leading-[1.2] tracking-[-0.5px] mb-[10px]"
+                                                style={{ color: data.titleColor }}
+                                            >
                                                 {service.title || "Pet Service"}
                                             </h3>
-                                            <p className="text-[var(--textMuted)] text-[14px] leading-[1.48]">
+                                            <p 
+                                                className="text-[14px] leading-[1.48]"
+                                                style={{ color: data.descColor }}
+                                            >
                                                 {service.description}
                                             </p>
                                         </div>
 
                                         {service.priceLabel && (
-                                            <div className="text-[var(--primaryHover)] font-semibold text-sm mb-2">
+                                            <div 
+                                                className="font-semibold text-sm mb-2"
+                                                style={{ color: data.priceColor }}
+                                            >
                                                 {service.priceLabel}
                                             </div>
                                         )}
 
-                                        <a href="#" className="inline-flex items-center gap-2 text-[var(--text)] font-medium text-[16px] hover:text-[var(--primaryHover)] transition-colors mt-auto">
+                                        <a 
+                                            href="#" 
+                                            className="inline-flex items-center gap-2 font-medium text-[16px] transition-colors mt-auto opacity-90 hover:opacity-100"
+                                            style={{ color: data.titleColor }}
+                                        >
                                             Learn More
                                             <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                                         </a>
@@ -96,8 +118,12 @@ export default function ServicesSection({ data }: { data: any }) {
                 </div>
 
                 {data.cta && (
-                    <div >
-                        <a href={data.cta.href || "#"} className="group relative bg-[var(--primary)] text-white rounded-2xl py-3.5 px-6 flex items-center justify-center gap-2.5 w-fit overflow-hidden hover:bg-[var(--primaryHover)] transition-all duration-300 shadow-sm">
+                    <div>
+                        <a 
+                            href={data.cta.href || "#"} 
+                            className="group relative rounded-2xl py-3.5 px-6 flex items-center justify-center gap-2.5 w-fit overflow-hidden transition-all duration-300 shadow-sm hover:opacity-90"
+                            style={{ backgroundColor: data.cta.bg, color: data.cta.text }}
+                        >
                             <span className="font-medium text-[16px] whitespace-nowrap">
                                 {data.cta.label}
                             </span>

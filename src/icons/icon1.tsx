@@ -12,9 +12,11 @@ export default function PawIcon({
   color = "#FFC357",
   size = 24, // default size
   className,
-}: PawIconProps) {
+  props
+}: any) {
   return (
     <svg
+    {...props}
       width={size}
       height={size}
       viewBox="0 0 24 24"
