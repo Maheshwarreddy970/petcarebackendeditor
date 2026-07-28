@@ -82,7 +82,6 @@ export default function AboutSection({ data = defaultAboutData }) {
                 <img
                   src={cards[0].src}
                   alt={cards[0].alt}
-                  fill
                   className="object-cover transition duration-500 hover:scale-105"
                 />
               </div>
@@ -97,7 +96,6 @@ export default function AboutSection({ data = defaultAboutData }) {
                 <img
                   src={cards[1].src}
                   alt={cards[1].alt}
-                  fill
                   className="object-cover transition duration-500 hover:scale-105"
                 />
               </div>
@@ -112,7 +110,6 @@ export default function AboutSection({ data = defaultAboutData }) {
                 <img
                   src={cards[2].src}
                   alt={cards[2].alt}
-                  fill
                   className="object-cover transition duration-500 hover:scale-105"
                 />
               </div>

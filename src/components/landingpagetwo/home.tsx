@@ -37,7 +37,6 @@ export default function Hero({ data = defaultHeroData }: { data?: HeroData }) {
                 <img
                     src="/4hSYsmxSfhf9uFuCUXkCroZutsY.avif"
                     alt="Cloud Background"
-                    fill
                     priority
                     className="object-cover"
                 />
@@ -52,7 +51,6 @@ export default function Hero({ data = defaultHeroData }: { data?: HeroData }) {
                     <img
                         src="/t49nGcvSU3RT2ngSvvjRRajdes4.avif"
                         alt="Cloud"
-                        fill
                         className="object-cover object-bottom inset-0"
                     />
                 </div>

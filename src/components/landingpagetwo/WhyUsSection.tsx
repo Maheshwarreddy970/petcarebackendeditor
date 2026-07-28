@@ -101,7 +101,6 @@ export default function WhyUsSection() {
               <img
                 src="/irH7Dag30YqNcSK7sjeAhwh3P8.avif"
                 alt="Feature illustration"
-                fill
                 className="  absolute "
               />
               <div className="relative z-10 flex h-full flex-col p-6 justify-center ">
