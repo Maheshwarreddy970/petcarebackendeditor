@@ -100,7 +100,7 @@ export default function Introduction({ data = defaultIntroData }: { data?: Intro
                 width={520}
                 height={650}
                 className="h-auto w-full object-contain"
-                priority
+
               />
               {/* Add glasses here later */}
             </div>

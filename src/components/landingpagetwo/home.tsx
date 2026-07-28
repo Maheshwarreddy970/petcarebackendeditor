@@ -37,7 +37,7 @@ export default function Hero({ data = defaultHeroData }: { data?: HeroData }) {
                 <img
                     src="/4hSYsmxSfhf9uFuCUXkCroZutsY.avif"
                     alt="Cloud Background"
-                    priority
+
                     className="object-cover"
                 />
             </div>
@@ -70,7 +70,7 @@ export default function Hero({ data = defaultHeroData }: { data?: HeroData }) {
                         alt="Cute brown and white puppy"
                         width={700}
                         height={829}
-                        priority
+
                         className="w-full h-auto object-contain"
                     />
                 </div>
@@ -165,7 +165,7 @@ export default function Hero({ data = defaultHeroData }: { data?: HeroData }) {
                                     alt="Cute brown and white puppy"
                                     width={700}
                                     height={829}
-                                    priority
+
                                     className="w-full h-auto object-contain"
                                 />
                             </div>

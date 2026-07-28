@@ -73,7 +73,7 @@ export default function WhyChooseUs({ data = defaultWhyChooseUsData }) {
                 <img
                     src='/whychoseus.avif'
                     alt='Background Image'
-                    priority
+
                     className="object-cover -z-20"
                 />
 
