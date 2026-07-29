@@ -13,7 +13,7 @@ interface DashboardProps {
 
 export default function ClientDashboard({ name, dbData }: DashboardProps) {
   const [downloading, setDownloading] = useState(false);
-  const paid=dbData.paid
+  const paid = dbData.paid;
   const activeData = merge({}, dbData?.websiteOneData || {});
 
   const handleDownload = async () => {
@@ -45,25 +45,27 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
   };
 
   return (
-    <div className="min-h-screen bg-white text-black p-8 font-sans flex flex-col">
-      <div className="w-full mx-auto flex items-center justify-between pb-6 mb-6 border-b border-gray-200">
+    <div className="min-h-screen bg-[#f8f9fa] text-black p-8 font-sans flex flex-col">
+      
+      {/* Header */}
+      <div className="w-full max-w-[1400px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between pb-6 mb-8 border-b border-gray-200 gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{dbData?.clientName || name}</h1>
-          <p className="text-sm text-gray-500 mt-1">Website Manager</p>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">{dbData?.clientName || name}</h1>
+          <p className="text-sm text-gray-500 mt-1 font-medium">Website Dashboard & Preview</p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Link href={`/${name}/edit?tab=visual`} className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-gray-300 rounded hover:bg-gray-50 text-black transition-colors">
-            <LayoutTemplate size={16} /> Edit Visual
+        <div className="flex flex-wrap items-center gap-3">
+          <Link href={`/${name}/edit?tab=visual`} className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-black transition-all shadow-sm">
+            <LayoutTemplate size={16} className="text-gray-500" /> Edit Visual
           </Link>
-          <Link href={`/${name}/edit?tab=json`} className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-gray-300 rounded hover:bg-gray-50 text-black transition-colors">
-            <Code size={16} /> Edit JSON
+          <Link href={`/${name}/edit?tab=json`} className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-black transition-all shadow-sm">
+            <Code size={16} className="text-gray-500" /> Edit JSON
           </Link>
-          <Link href={`/${name}/live`} target="_blank" className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-gray-300 rounded hover:bg-gray-50 text-black transition-colors">
-            <ExternalLink size={16} /> Fullscreen
+          <Link href={`/${name}/live`} target="_blank" className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-black transition-all shadow-sm">
+            <ExternalLink size={16} className="text-gray-500" /> Fullscreen
           </Link>
           {paid &&
-            <button onClick={handleDownload} disabled={downloading} className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-black text-white rounded hover:bg-gray-800 transition-colors">
+            <button onClick={handleDownload} disabled={downloading} className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-black text-white rounded-lg hover:bg-gray-800 transition-all shadow-md disabled:opacity-70">
               {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
               {downloading ? "Packaging..." : "Export ZIP"}
             </button>
@@ -71,12 +73,37 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
         </div>
       </div>
 
-      {/* Massive Scaled Preview */}
-      <div className="relative w-full flex-1 bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
-        <div className="absolute top-0 left-0 w-full h-[900px] origin-top-left transform scale-[0.70] xl:scale-[0.85] pointer-events-none">
-          <WebsiteOne data={activeData} />
+      {/* Browser Mockup Card Preview */}
+      <div className="flex-1 flex justify-center items-start w-full">
+        <div className="w-full max-w-[1200px] bg-white rounded-xl shadow-2xl border border-gray-200/60 overflow-hidden flex flex-col ring-1 ring-black/5">
+          
+          {/* Fake Browser Top Bar */}
+          <div className="h-12 bg-gray-50 border-b border-gray-200 flex items-center px-4 shrink-0 relative">
+            {/* Window Controls */}
+            <div className="flex gap-2 absolute left-4">
+              <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]"></div>
+              <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]"></div>
+              <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]"></div>
+            </div>
+
+            {/* Fake URL Bar */}
+            <div className="mx-auto bg-white border border-gray-200 shadow-sm text-gray-400 text-xs py-1.5 px-6 rounded-md w-full max-w-sm text-center flex items-center justify-center gap-2">
+              <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+              <span className="truncate">{name}.petocare.com</span>
+            </div>
+          </div>
+
+          {/* Actual Scrollable Website Preview */}
+          <div className="relative w-full h-[700px] overflow-y-auto overflow-x-hidden bg-[#f3f3f3]">
+            {/* The wrapper ID needed for the download function */}
+            <div id="live-preview-box" className="w-full bg-white min-h-full">
+              <WebsiteOne data={activeData} />
+            </div>
+          </div>
+
         </div>
       </div>
+
     </div>
   );
 }
