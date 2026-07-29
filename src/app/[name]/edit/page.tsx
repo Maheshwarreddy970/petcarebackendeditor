@@ -87,29 +87,72 @@ export const ColorText = ({ label, colorValue, onColorChange }: any) => {
 };
 
 // 🔥 NEW FEATURE: Button Configuration (Text, Link, Bg Color, Text Color)
-const ButtonConfig = ({ label, textVal, hrefVal, bgCol, textCol, onText, onHref, onBg, onCol }: any) => (
-  <div className="p-3 border border-gray-200 rounded-lg bg-gray-50 space-y-3">
-    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">{label}</label>
-    <div className="grid grid-cols-2 gap-3">
-      <input type="text" placeholder="Button Text" value={textVal || ""} onChange={e => onText(e.target.value)} className="w-full h-9 px-3 border border-gray-200 rounded text-sm outline-none focus:border-black" />
-      <input type="text" placeholder="Link (URL)" value={hrefVal || ""} onChange={e => onHref(e.target.value)} className="w-full h-9 px-3 border border-gray-200 rounded text-sm outline-none focus:border-black" />
-    </div>
-    <div className="flex gap-4">
-      <div className="flex items-center gap-2">
-        <div className="relative w-6 h-6 rounded border border-gray-300 overflow-hidden" style={{ backgroundColor: bgCol || '#000' }}>
-          <input type="color" value={bgCol || "#000"} onChange={e => onBg(e.target.value)} className="opacity-0 w-full h-full cursor-pointer absolute inset-0" />
-        </div>
-        <span className="text-xs text-gray-500 font-medium">Background</span>
+export const ButtonConfig = ({ label, textVal, hrefVal, bgCol, textCol, onText, onHref, onBg, onCol }: any) => {
+  
+  // Reusable strict HEX validator. Rejects rgba/hsl and allows only valid hex codes.
+  const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>, callback: (val: string) => void) => {
+    let val = e.target.value;
+    if (/^#?[0-9A-Fa-f]{0,6}$/.test(val)) {
+      if (val.length > 0 && !val.startsWith('#')) {
+        val = '#' + val;
+      }
+      callback(val);
+    }
+  };
+
+  return (
+    <div className="p-3 border border-gray-200 rounded-lg bg-gray-50 space-y-3">
+      <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">{label}</label>
+      
+      {/* Top Row: Text and Link Inputs */}
+      <div className="grid grid-cols-2 gap-3">
+        <input type="text" placeholder="Button Text" value={textVal || ""} onChange={e => onText(e.target.value)} className="w-full h-9 px-3 border border-gray-200 rounded text-sm outline-none focus:border-black" />
+        <input type="text" placeholder="Link (URL)" value={hrefVal || ""} onChange={e => onHref(e.target.value)} className="w-full h-9 px-3 border border-gray-200 rounded text-sm outline-none focus:border-black" />
       </div>
-      <div className="flex items-center gap-2">
-        <div className="relative w-6 h-6 rounded border border-gray-300 overflow-hidden" style={{ backgroundColor: textCol || '#fff' }}>
-          <input type="color" value={textCol || "#fff"} onChange={e => onCol(e.target.value)} className="opacity-0 w-full h-full cursor-pointer absolute inset-0" />
+      
+      {/* Bottom Row: Color Configs */}
+      <div className="grid grid-cols-2 gap-3">
+        
+        {/* Background Color */}
+        <div className="space-y-1">
+          <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Background</span>
+          <div className="flex items-center gap-2">
+            <div className="relative w-8 h-8 rounded border border-gray-300 overflow-hidden shrink-0" style={{ backgroundColor: bgCol || '#000000' }}>
+              <input type="color" value={bgCol || "#000000"} onChange={e => onBg(e.target.value)} className="opacity-0 w-full h-full cursor-pointer absolute inset-0" title="Change Background Color" />
+            </div>
+            <input 
+              type="text" 
+              value={bgCol || ""} 
+              onChange={e => handleHexChange(e, onBg)} 
+              placeholder="#000000" 
+              maxLength={7} 
+              className="w-full h-8 px-2 bg-white border border-gray-200 rounded text-xs font-mono uppercase outline-none focus:border-black" 
+            />
+          </div>
         </div>
-        <span className="text-xs text-gray-500 font-medium">Text</span>
+
+        {/* Text Color */}
+        <div className="space-y-1">
+          <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Text</span>
+          <div className="flex items-center gap-2">
+            <div className="relative w-8 h-8 rounded border border-gray-300 overflow-hidden shrink-0" style={{ backgroundColor: textCol || '#ffffff' }}>
+              <input type="color" value={textCol || "#ffffff"} onChange={e => onCol(e.target.value)} className="opacity-0 w-full h-full cursor-pointer absolute inset-0" title="Change Text Color" />
+            </div>
+            <input 
+              type="text" 
+              value={textCol || ""} 
+              onChange={e => handleHexChange(e, onCol)} 
+              placeholder="#FFFFFF" 
+              maxLength={7} 
+              className="w-full h-8 px-2 bg-white border border-gray-200 rounded text-xs font-mono uppercase outline-none focus:border-black" 
+            />
+          </div>
+        </div>
+
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const ImageUploader = ({ label, src, isUploading, onUpload }: { label: string, src: string, isUploading: boolean, onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void }) => (
   <div className="border border-gray-200 p-3 rounded-lg bg-gray-50/50 w-full">
