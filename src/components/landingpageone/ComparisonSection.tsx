@@ -27,7 +27,7 @@ export default function ComparisonSection({ data }: { data: any }) {
                 </div>
 
                 {/* Comparison Board */}
-                <div className="relative w-full max-w-[950px] mx-auto flex flex-col md:flex-row shadow-sm items-stretch">
+                <div className="relative w-full max-w-[950px] mx-auto flex flex-col md:flex-row  items-stretch">
                     
                     {/* Left Column (Negative / Other Offers) */}
                     <div 
