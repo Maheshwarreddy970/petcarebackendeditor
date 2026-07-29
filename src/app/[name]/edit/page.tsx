@@ -37,37 +37,54 @@ const Input = ({ label, value, onChange, isTextArea = false }: { label: string, 
 );
 
 // 🔥 NEW FEATURE: Text Input with Inline Color Picker
-const ColorInput = ({ label, colorValue, onColorChange }: any) => (
-  <div className="space-y-1.5 w-full">
-    {label && <label className="text-xs font-medium text-gray-500">{label}</label>}
-    
-    <div className="flex items-center gap-2">
-      {/* 1. Color Picker Square */}
-      <div 
-        className="relative w-9 h-9 rounded border border-gray-300 shrink-0 overflow-hidden shadow-sm" 
-        style={{ backgroundColor: colorValue || '#000000' }}
-      >
-        <input 
-          type="color" 
-          value={colorValue || "#000000"} 
-          onChange={(e) => onColorChange(e.target.value)} 
-          className="opacity-0 w-full h-full cursor-pointer absolute inset-0" 
-          title="Pick Color" 
+export const ColorText = ({ label, colorValue, onColorChange }: any) => {
+  // Strictly enforce HEX only. Rejects any attempt to type rgba or hsl.
+  const handleHexInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value;
+
+    // Regex allows only '#' followed by 0 to 6 hex characters (0-9, A-F)
+    if (/^#?[0-9A-Fa-f]{0,6}$/.test(val)) {
+      // Auto-add the '#' if the user starts typing without it
+      if (val.length > 0 && !val.startsWith('#')) {
+        val = '#' + val;
+      }
+      onColorChange(val);
+    }
+  };
+
+  return (
+    <div className="space-y-1.5 w-full">
+      <label className="text-xs font-medium text-gray-500">{label}</label>
+      <div className="flex items-start gap-2">
+
+        {/* Color Pencil / Picker */}
+        <div
+          className="relative w-9 h-9 rounded border border-gray-300 shrink-0 overflow-hidden shadow-sm"
+          style={{ backgroundColor: colorValue || '#000000' }}
+        >
+          <input
+            type="color"
+            value={colorValue || "#000000"}
+            onChange={e => onColorChange(e.target.value)}
+            className="opacity-0 w-full h-full cursor-pointer absolute inset-0"
+            title="Change Color"
+          />
+        </div>
+
+        {/* Text Input (Strictly Hex Only) */}
+        <input
+          type="text"
+          value={colorValue || ""}
+          onChange={handleHexInputChange}
+          placeholder="#000000"
+          maxLength={7}
+          className="w-full h-9 bg-gray-50 border border-gray-200 px-3 rounded text-sm outline-none focus:border-black"
         />
+
       </div>
-      
-      {/* 2. Hex Code Text Input */}
-      <input 
-        type="text" 
-        value={colorValue || ""} 
-        onChange={(e) => onColorChange(e.target.value)} 
-        placeholder="#000000"
-        maxLength={7}
-        className="w-full h-9 bg-gray-50 border border-gray-200 px-3 rounded text-sm font-mono uppercase outline-none focus:border-black" 
-      />
     </div>
-  </div>
-);
+  );
+};
 
 // 🔥 NEW FEATURE: Button Configuration (Text, Link, Bg Color, Text Color)
 const ButtonConfig = ({ label, textVal, hrefVal, bgCol, textCol, onText, onHref, onBg, onCol }: any) => (
@@ -252,10 +269,10 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
               <ColorText label="Background Color" colorValue={config.navbar?.bg} onColorChange={(v: string) => updateField('navbar.bg', v)} />
               <ColorText label="Nav Link Color" colorValue={config.navbar?.linkColor} onColorChange={(v: string) => updateField('navbar.linkColor', v)} />
               <ColorText label="Nav Hover Color" colorValue={config.navbar?.linkHoverColor} onColorChange={(v: string) => updateField('navbar.linkHoverColor', v)} />
-              
+
               <ImageUploader label="Logo Image" src={config.navbar?.logo?.src} isUploading={uploadingImage === 'navbar.logo.src'} onUpload={(e) => handleImageUpload(e, 'navbar.logo.src')} />
               <Input label="Logo Alt Text" value={config.navbar?.logo?.alt} onChange={(v) => updateField('navbar.logo.alt', v)} />
-              
+
               <ButtonConfig label="CTA Button" textVal={config.navbar?.cta?.label} hrefVal={config.navbar?.cta?.href} bgCol={config.navbar?.cta?.bg} textCol={config.navbar?.cta?.text} onText={(v: string) => updateField('navbar.cta.label', v)} onHref={(v: string) => updateField('navbar.cta.href', v)} onBg={(v: string) => updateField('navbar.cta.bg', v)} onCol={(v: string) => updateField('navbar.cta.text', v)} />
             </Section>
 
@@ -264,11 +281,11 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
               <ColorText label="Background Color" colorValue={config.hero?.bg} onColorChange={(v: string) => updateField('hero.bg', v)} />
               <ColorText label="Heading" textValue={config.hero?.heading} colorValue={config.hero?.headingColor} onTextChange={(v: string) => updateField('hero.heading', v)} onColorChange={(v: string) => updateField('hero.headingColor', v)} />
               <ColorText label="Description" textValue={config.hero?.description} colorValue={config.hero?.descColor} onTextChange={(v: string) => updateField('hero.description', v)} onColorChange={(v: string) => updateField('hero.descColor', v)} isTextArea />
-              
+
               <ImageUploader label="Background Image" src={config.hero?.image} isUploading={uploadingImage === 'hero.image'} onUpload={(e) => handleImageUpload(e, 'hero.image')} />
-              
+
               <ButtonConfig label="CTA Button" textVal={config.hero?.cta?.label} hrefVal={config.hero?.cta?.href} bgCol={config.hero?.cta?.bg} textCol={config.hero?.cta?.text} onText={(v: string) => updateField('hero.cta.label', v)} onHref={(v: string) => updateField('hero.cta.href', v)} onBg={(v: string) => updateField('hero.cta.bg', v)} onCol={(v: string) => updateField('hero.cta.text', v)} />
-              
+
               <div className="border border-gray-200 p-3 rounded-lg bg-gray-50 mt-4 space-y-3">
                 <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Social Proof</label>
                 <ColorText label="Star Count (1-5)" textValue={config.hero?.socialProof?.stars} colorValue={config.hero?.socialProof?.starColor} onTextChange={(v: string) => updateField('hero.socialProof.stars', v)} onColorChange={(v: string) => updateField('hero.socialProof.starColor', v)} />
@@ -280,20 +297,20 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
             <Section title="Stats Banner">
               <ColorText label="Background Color" colorValue={config.statsBanner?.bg} onColorChange={(v: string) => updateField('statsBanner.bg', v)} />
               <ColorText label="Heading" textValue={config.statsBanner?.heading} colorValue={config.statsBanner?.headingColor} onTextChange={(v: string) => updateField('statsBanner.heading', v)} onColorChange={(v: string) => updateField('statsBanner.headingColor', v)} />
-              
+
               <div className="border border-gray-200 p-3 rounded-lg bg-gray-50 mt-4 space-y-3">
-                 <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Ratings</label>
-                 <ColorText label="Score (e.g. 4.96)" textValue={config.statsBanner?.rating?.score} colorValue={config.statsBanner?.rating?.scoreColor} onTextChange={(v: string) => updateField('statsBanner.rating.score', v)} onColorChange={(v: string) => updateField('statsBanner.rating.scoreColor', v)} />
-                 <Input label="Scale (e.g. /5)" value={config.statsBanner?.rating?.max} onChange={(v) => updateField('statsBanner.rating.max', v)} />
-                 <ColorText label="Stars Count" textValue={config.statsBanner?.rating?.stars} colorValue={config.statsBanner?.rating?.starColor} onTextChange={(v: string) => updateField('statsBanner.rating.stars', v)} onColorChange={(v: string) => updateField('statsBanner.rating.starColor', v)} />
-                 <ColorText label="Review Label" textValue={config.statsBanner?.rating?.label} colorValue={config.statsBanner?.rating?.labelColor} onTextChange={(v: string) => updateField('statsBanner.rating.label', v)} onColorChange={(v: string) => updateField('statsBanner.rating.labelColor', v)} />
+                <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Ratings</label>
+                <ColorText label="Score (e.g. 4.96)" textValue={config.statsBanner?.rating?.score} colorValue={config.statsBanner?.rating?.scoreColor} onTextChange={(v: string) => updateField('statsBanner.rating.score', v)} onColorChange={(v: string) => updateField('statsBanner.rating.scoreColor', v)} />
+                <Input label="Scale (e.g. /5)" value={config.statsBanner?.rating?.max} onChange={(v) => updateField('statsBanner.rating.max', v)} />
+                <ColorText label="Stars Count" textValue={config.statsBanner?.rating?.stars} colorValue={config.statsBanner?.rating?.starColor} onTextChange={(v: string) => updateField('statsBanner.rating.stars', v)} onColorChange={(v: string) => updateField('statsBanner.rating.starColor', v)} />
+                <ColorText label="Review Label" textValue={config.statsBanner?.rating?.label} colorValue={config.statsBanner?.rating?.labelColor} onTextChange={(v: string) => updateField('statsBanner.rating.label', v)} onColorChange={(v: string) => updateField('statsBanner.rating.labelColor', v)} />
               </div>
 
               <div className="border border-gray-200 p-3 rounded-lg bg-gray-50 mt-4 space-y-3">
-                 <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Experience</label>
-                 <ColorText label="Icon Color" colorValue={config.statsBanner?.experience?.iconColor} onColorChange={(v: string) => updateField('statsBanner.experience.iconColor', v)} />
-                 <ColorText label="Title" textValue={config.statsBanner?.experience?.title} colorValue={config.statsBanner?.experience?.titleColor} onTextChange={(v: string) => updateField('statsBanner.experience.title', v)} onColorChange={(v: string) => updateField('statsBanner.experience.titleColor', v)} />
-                 <ColorText label="Subtitle" textValue={config.statsBanner?.experience?.subtitle} colorValue={config.statsBanner?.experience?.subColor} onTextChange={(v: string) => updateField('statsBanner.experience.subtitle', v)} onColorChange={(v: string) => updateField('statsBanner.experience.subColor', v)} />
+                <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Experience</label>
+                <ColorText label="Icon Color" colorValue={config.statsBanner?.experience?.iconColor} onColorChange={(v: string) => updateField('statsBanner.experience.iconColor', v)} />
+                <ColorText label="Title" textValue={config.statsBanner?.experience?.title} colorValue={config.statsBanner?.experience?.titleColor} onTextChange={(v: string) => updateField('statsBanner.experience.title', v)} onColorChange={(v: string) => updateField('statsBanner.experience.titleColor', v)} />
+                <ColorText label="Subtitle" textValue={config.statsBanner?.experience?.subtitle} colorValue={config.statsBanner?.experience?.subColor} onTextChange={(v: string) => updateField('statsBanner.experience.subtitle', v)} onColorChange={(v: string) => updateField('statsBanner.experience.subColor', v)} />
               </div>
             </Section>
 
@@ -302,20 +319,20 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
               <ColorText label="Background Color" colorValue={config.about?.bg} onColorChange={(v: string) => updateField('about.bg', v)} />
               <ColorText label="Heading" textValue={config.about?.heading} colorValue={config.about?.headingColor} onTextChange={(v: string) => updateField('about.heading', v)} onColorChange={(v: string) => updateField('about.headingColor', v)} />
               <ColorText label="Description" textValue={config.about?.description} colorValue={config.about?.descColor} onTextChange={(v: string) => updateField('about.description', v)} onColorChange={(v: string) => updateField('about.descColor', v)} isTextArea />
-              
+
               <ImageUploader label="About Image" src={config.about?.image} isUploading={uploadingImage === 'about.image'} onUpload={(e) => handleImageUpload(e, 'about.image')} />
-              
+
               <div className="border border-gray-200 p-3 rounded-lg bg-gray-50 mt-4 space-y-3">
-                 <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Features List</label>
-                 <ColorText label="Icon Color" colorValue={config.about?.featureIconColor} onColorChange={(v: string) => updateField('about.featureIconColor', v)} />
-                 <ColorText label="Text Color" colorValue={config.about?.featureColor} onColorChange={(v: string) => updateField('about.featureColor', v)} />
-                 {config.about?.features?.map((feat: string, i: number) => (
-                    <div key={i} className="flex gap-2 relative group">
-                      <input type="text" value={feat} onChange={(e) => updateField(`about.features[${i}]`, e.target.value)} className="w-full bg-white border border-gray-200 p-2 rounded text-sm outline-none focus:border-black" />
-                      <button onClick={() => removeArrayItem('about.features', i)} className="absolute right-2 top-2 text-red-400 opacity-0 group-hover:opacity-100"><Trash2 size={14} /></button>
-                    </div>
-                 ))}
-                 <button onClick={() => addArrayItem('about.features', "New Feature")} className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 font-medium"><Plus size={14}/> Add Feature</button>
+                <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Features List</label>
+                <ColorText label="Icon Color" colorValue={config.about?.featureIconColor} onColorChange={(v: string) => updateField('about.featureIconColor', v)} />
+                <ColorText label="Text Color" colorValue={config.about?.featureColor} onColorChange={(v: string) => updateField('about.featureColor', v)} />
+                {config.about?.features?.map((feat: string, i: number) => (
+                  <div key={i} className="flex gap-2 relative group">
+                    <input type="text" value={feat} onChange={(e) => updateField(`about.features[${i}]`, e.target.value)} className="w-full bg-white border border-gray-200 p-2 rounded text-sm outline-none focus:border-black" />
+                    <button onClick={() => removeArrayItem('about.features', i)} className="absolute right-2 top-2 text-red-400 opacity-0 group-hover:opacity-100"><Trash2 size={14} /></button>
+                  </div>
+                ))}
+                <button onClick={() => addArrayItem('about.features', "New Feature")} className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 font-medium"><Plus size={14} /> Add Feature</button>
               </div>
 
               <ButtonConfig label="CTA Button" textVal={config.about?.cta?.label} hrefVal={config.about?.cta?.href} bgCol={config.about?.cta?.bg} textCol={config.about?.cta?.text} onText={(v: string) => updateField('about.cta.label', v)} onHref={(v: string) => updateField('about.cta.href', v)} onBg={(v: string) => updateField('about.cta.bg', v)} onCol={(v: string) => updateField('about.cta.text', v)} />
@@ -327,7 +344,7 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
                 <ColorText label="Background Color" colorValue={config.gallery?.bg} onColorChange={(v: string) => updateField('gallery.bg', v)} />
                 <ColorText label="Heading" textValue={config.gallery?.heading} colorValue={config.gallery?.headingColor} onTextChange={(v: string) => updateField('gallery.heading', v)} onColorChange={(v: string) => updateField('gallery.headingColor', v)} />
                 <ColorText label="Description" textValue={config.gallery?.description} colorValue={config.gallery?.descColor} onTextChange={(v: string) => updateField('gallery.description', v)} onColorChange={(v: string) => updateField('gallery.descColor', v)} isTextArea />
-                
+
                 <ColorText label="Arrow Icon Color" colorValue={config.gallery?.arrowColor} onColorChange={(v: string) => updateField('gallery.arrowColor', v)} />
                 <ColorText label="Before/After Badge Bg" colorValue={config.gallery?.badgeBg} onColorChange={(v: string) => updateField('gallery.badgeBg', v)} />
                 <ColorText label="Before/After Badge Text" colorValue={config.gallery?.badgeText} onColorChange={(v: string) => updateField('gallery.badgeText', v)} />
@@ -357,13 +374,13 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
                 <ColorText label="Background Color" colorValue={config.services?.bg} onColorChange={(v: string) => updateField('services.bg', v)} />
                 <ColorText label="Heading" textValue={config.services?.heading} colorValue={config.services?.headingColor} onTextChange={(v: string) => updateField('services.heading', v)} onColorChange={(v: string) => updateField('services.headingColor', v)} />
                 <ColorText label="Description" textValue={config.services?.description} colorValue={config.services?.descColor} onTextChange={(v: string) => updateField('services.description', v)} onColorChange={(v: string) => updateField('services.descColor', v)} isTextArea />
-                
+
                 <div className="grid grid-cols-2 gap-2 my-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                   <ColorText label="Card Bg" colorValue={config.services?.cardBg} onColorChange={(v: string) => updateField('services.cardBg', v)} />
-                   <ColorText label="Card Border" colorValue={config.services?.cardBorder} onColorChange={(v: string) => updateField('services.cardBorder', v)} />
-                   <ColorText label="Icon Color" colorValue={config.services?.iconColor} onColorChange={(v: string) => updateField('services.iconColor', v)} />
-                   <ColorText label="Title Color" colorValue={config.services?.titleColor} onColorChange={(v: string) => updateField('services.titleColor', v)} />
-                   <ColorText label="Price Color" colorValue={config.services?.priceColor} onColorChange={(v: string) => updateField('services.priceColor', v)} />
+                  <ColorText label="Card Bg" colorValue={config.services?.cardBg} onColorChange={(v: string) => updateField('services.cardBg', v)} />
+                  <ColorText label="Card Border" colorValue={config.services?.cardBorder} onColorChange={(v: string) => updateField('services.cardBorder', v)} />
+                  <ColorText label="Icon Color" colorValue={config.services?.iconColor} onColorChange={(v: string) => updateField('services.iconColor', v)} />
+                  <ColorText label="Title Color" colorValue={config.services?.titleColor} onColorChange={(v: string) => updateField('services.titleColor', v)} />
+                  <ColorText label="Price Color" colorValue={config.services?.priceColor} onColorChange={(v: string) => updateField('services.priceColor', v)} />
                 </div>
 
                 <div className="mt-4 space-y-3">
@@ -382,7 +399,7 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
                     </div>
                   ))}
                 </div>
-                
+
                 <div className="mt-4">
                   <ButtonConfig label="CTA Button" textVal={config.services?.cta?.label} hrefVal={config.services?.cta?.href} bgCol={config.services?.cta?.bg} textCol={config.services?.cta?.text} onText={(v: string) => updateField('services.cta.label', v)} onHref={(v: string) => updateField('services.cta.href', v)} onBg={(v: string) => updateField('services.cta.bg', v)} onCol={(v: string) => updateField('services.cta.text', v)} />
                 </div>
@@ -396,7 +413,7 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
                 <ColorText label="Vertical Line Color" colorValue={config.process?.lineColor} onColorChange={(v: string) => updateField('process.lineColor', v)} />
                 <ColorText label="Heading" textValue={config.process?.heading} colorValue={config.process?.headingColor} onTextChange={(v: string) => updateField('process.heading', v)} onColorChange={(v: string) => updateField('process.headingColor', v)} />
                 <ColorText label="Description" textValue={config.process?.description} colorValue={config.process?.descColor} onTextChange={(v: string) => updateField('process.description', v)} onColorChange={(v: string) => updateField('process.descColor', v)} isTextArea />
-                
+
                 <div className="mt-4 space-y-3">
                   <label className="text-xs font-bold text-gray-500 flex justify-between items-center">
                     Steps
@@ -424,19 +441,19 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
                 <ColorText label="Description" textValue={config.comparison?.description} colorValue={config.comparison?.descColor} onTextChange={(v: string) => updateField('comparison.description', v)} onColorChange={(v: string) => updateField('comparison.descColor', v)} isTextArea />
 
                 <div className="grid grid-cols-2 gap-4 mt-4 p-3 bg-gray-50 rounded border border-gray-200">
-                    <ColorText label="VS Badge Bg" colorValue={config.comparison?.vsBg} onColorChange={(v: string) => updateField('comparison.vsBg', v)} />
-                    <ColorText label="VS Badge Text" colorValue={config.comparison?.vsText} onColorChange={(v: string) => updateField('comparison.vsText', v)} />
+                  <ColorText label="VS Badge Bg" colorValue={config.comparison?.vsBg} onColorChange={(v: string) => updateField('comparison.vsBg', v)} />
+                  <ColorText label="VS Badge Text" colorValue={config.comparison?.vsText} onColorChange={(v: string) => updateField('comparison.vsText', v)} />
                 </div>
 
                 <div className="space-y-3 mt-4 border border-red-200 p-3 rounded-lg bg-red-50/50">
                   <div className="flex justify-between items-center">
-                     <label className="text-xs font-bold text-red-600 uppercase">Other Offers (Negative)</label>
-                     <button onClick={() => addArrayItem('comparison.otherOffers', "New Negative Point")} className="text-red-500 hover:text-red-700 flex items-center gap-1"><Plus size={14} /> Add</button>
+                    <label className="text-xs font-bold text-red-600 uppercase">Other Offers (Negative)</label>
+                    <button onClick={() => addArrayItem('comparison.otherOffers', "New Negative Point")} className="text-red-500 hover:text-red-700 flex items-center gap-1"><Plus size={14} /> Add</button>
                   </div>
                   <div className="flex gap-2">
-                     <ColorText label="Card Background" colorValue={config.comparison?.leftBg} onColorChange={(v: string) => updateField('comparison.leftBg', v)} />
-                     <ColorText label="Text Color" colorValue={config.comparison?.leftText} onColorChange={(v: string) => updateField('comparison.leftText', v)} />
-                     <ColorText label="Icon Color" colorValue={config.comparison?.leftIcon} onColorChange={(v: string) => updateField('comparison.leftIcon', v)} />
+                    <ColorText label="Card Background" colorValue={config.comparison?.leftBg} onColorChange={(v: string) => updateField('comparison.leftBg', v)} />
+                    <ColorText label="Text Color" colorValue={config.comparison?.leftText} onColorChange={(v: string) => updateField('comparison.leftText', v)} />
+                    <ColorText label="Icon Color" colorValue={config.comparison?.leftIcon} onColorChange={(v: string) => updateField('comparison.leftIcon', v)} />
                   </div>
                   {config.comparison.otherOffers?.map((feat: string, i: number) => (
                     <div key={i} className="flex gap-2 relative group">
@@ -448,13 +465,13 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
 
                 <div className="space-y-3 mt-4 border border-green-200 p-3 rounded-lg bg-green-50/50">
                   <div className="flex justify-between items-center">
-                     <label className="text-xs font-bold text-green-600 uppercase">Your Offers (Positive)</label>
-                     <button onClick={() => addArrayItem('comparison.petocareOffers', "New Positive Point")} className="text-green-600 hover:text-green-700 flex items-center gap-1"><Plus size={14} /> Add</button>
+                    <label className="text-xs font-bold text-green-600 uppercase">Your Offers (Positive)</label>
+                    <button onClick={() => addArrayItem('comparison.petocareOffers', "New Positive Point")} className="text-green-600 hover:text-green-700 flex items-center gap-1"><Plus size={14} /> Add</button>
                   </div>
                   <div className="flex gap-2">
-                     <ColorText label="Card Background" colorValue={config.comparison?.rightBg} onColorChange={(v: string) => updateField('comparison.rightBg', v)} />
-                     <ColorText label="Text Color" colorValue={config.comparison?.rightText} onColorChange={(v: string) => updateField('comparison.rightText', v)} />
-                     <ColorText label="Icon Color" colorValue={config.comparison?.rightIcon} onColorChange={(v: string) => updateField('comparison.rightIcon', v)} />
+                    <ColorText label="Card Background" colorValue={config.comparison?.rightBg} onColorChange={(v: string) => updateField('comparison.rightBg', v)} />
+                    <ColorText label="Text Color" colorValue={config.comparison?.rightText} onColorChange={(v: string) => updateField('comparison.rightText', v)} />
+                    <ColorText label="Icon Color" colorValue={config.comparison?.rightIcon} onColorChange={(v: string) => updateField('comparison.rightIcon', v)} />
                   </div>
                   {config.comparison.petocareOffers?.map((feat: string, i: number) => (
                     <div key={i} className="flex gap-2 relative group">
@@ -472,7 +489,7 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
                 <ColorText label="Section Background" colorValue={config.reviews?.bg} onColorChange={(v: string) => updateField('reviews.bg', v)} />
                 <ColorText label="Heading" textValue={config.reviews?.heading} colorValue={config.reviews?.headingColor} onTextChange={(v: string) => updateField('reviews.heading', v)} onColorChange={(v: string) => updateField('reviews.headingColor', v)} />
                 <ColorText label="Description" textValue={config.reviews?.description} colorValue={config.reviews?.descColor} onTextChange={(v: string) => updateField('reviews.description', v)} onColorChange={(v: string) => updateField('reviews.descColor', v)} isTextArea />
-                
+
                 {['col1', 'col2', 'col3'].map((col) => (
                   <div key={col} className="mt-6 space-y-3">
                     <label className="text-xs font-bold text-gray-500 uppercase flex justify-between items-center border-b border-gray-100 pb-2">
@@ -534,12 +551,12 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
                 <ColorText label="Background Color" colorValue={config.insights?.bg} onColorChange={(v: string) => updateField('insights.bg', v)} />
                 <ColorText label="Heading" textValue={config.insights?.heading} colorValue={config.insights?.headingColor} onTextChange={(v: string) => updateField('insights.heading', v)} onColorChange={(v: string) => updateField('insights.headingColor', v)} />
                 <ColorText label="Description" textValue={config.insights?.description} colorValue={config.insights?.descColor} onTextChange={(v: string) => updateField('insights.description', v)} onColorChange={(v: string) => updateField('insights.descColor', v)} isTextArea />
-                
+
                 <div className="grid grid-cols-2 gap-2 mt-4">
-                   <ColorText label="Card Bg" colorValue={config.insights?.cardBg} onColorChange={(v: string) => updateField('insights.cardBg', v)} />
-                   <ColorText label="Card Title Text" colorValue={config.insights?.cardTitle} onColorChange={(v: string) => updateField('insights.cardTitle', v)} />
-                   <ColorText label="Date Badge Bg" colorValue={config.insights?.cardDateBg} onColorChange={(v: string) => updateField('insights.cardDateBg', v)} />
-                   <ColorText label="Date Text" colorValue={config.insights?.cardDateText} onColorChange={(v: string) => updateField('insights.cardDateText', v)} />
+                  <ColorText label="Card Bg" colorValue={config.insights?.cardBg} onColorChange={(v: string) => updateField('insights.cardBg', v)} />
+                  <ColorText label="Card Title Text" colorValue={config.insights?.cardTitle} onColorChange={(v: string) => updateField('insights.cardTitle', v)} />
+                  <ColorText label="Date Badge Bg" colorValue={config.insights?.cardDateBg} onColorChange={(v: string) => updateField('insights.cardDateBg', v)} />
+                  <ColorText label="Date Text" colorValue={config.insights?.cardDateText} onColorChange={(v: string) => updateField('insights.cardDateText', v)} />
                 </div>
 
                 <div className="mt-4 space-y-3">
@@ -566,7 +583,7 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
               <ColorText label="Background Color" colorValue={config.ctaSection?.bg} onColorChange={(v: string) => updateField('ctaSection.bg', v)} />
               <ColorText label="Heading" textValue={config.ctaSection?.heading} colorValue={config.ctaSection?.headingColor} onTextChange={(v: string) => updateField('ctaSection.heading', v)} onColorChange={(v: string) => updateField('ctaSection.headingColor', v)} />
               <ColorText label="Description" textValue={config.ctaSection?.description} colorValue={config.ctaSection?.descColor} onTextChange={(v: string) => updateField('ctaSection.description', v)} onColorChange={(v: string) => updateField('ctaSection.descColor', v)} isTextArea />
-              
+
               <ImageUploader label="Background Image" src={config.ctaSection?.image} isUploading={uploadingImage === 'ctaSection.image'} onUpload={(e) => handleImageUpload(e, 'ctaSection.image')} />
               <ButtonConfig label="CTA Button" textVal={config.ctaSection?.cta?.label} hrefVal={config.ctaSection?.cta?.href} bgCol={config.ctaSection?.cta?.bg} textCol={config.ctaSection?.cta?.text} onText={(v: string) => updateField('ctaSection.cta.label', v)} onHref={(v: string) => updateField('ctaSection.cta.href', v)} onBg={(v: string) => updateField('ctaSection.cta.bg', v)} onCol={(v: string) => updateField('ctaSection.cta.text', v)} />
             </Section>
@@ -575,14 +592,14 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
             <Section title="Footer">
               <ColorText label="Background Color" colorValue={config.footer?.bg} onColorChange={(v: string) => updateField('footer.bg', v)} />
               <div className="grid grid-cols-2 gap-2 mt-2">
-                 <ColorText label="Main Text Color" colorValue={config.footer?.textColor} onColorChange={(v: string) => updateField('footer.textColor', v)} />
-                 <ColorText label="Muted Text Color" colorValue={config.footer?.mutedColor} onColorChange={(v: string) => updateField('footer.mutedColor', v)} />
-                 <ColorText label="Icon Bg Color" colorValue={config.footer?.iconBg} onColorChange={(v: string) => updateField('footer.iconBg', v)} />
-                 <ColorText label="Icon Text Color" colorValue={config.footer?.iconText} onColorChange={(v: string) => updateField('footer.iconText', v)} />
+                <ColorText label="Main Text Color" colorValue={config.footer?.textColor} onColorChange={(v: string) => updateField('footer.textColor', v)} />
+                <ColorText label="Muted Text Color" colorValue={config.footer?.mutedColor} onColorChange={(v: string) => updateField('footer.mutedColor', v)} />
+                <ColorText label="Icon Bg Color" colorValue={config.footer?.iconBg} onColorChange={(v: string) => updateField('footer.iconBg', v)} />
+                <ColorText label="Icon Text Color" colorValue={config.footer?.iconText} onColorChange={(v: string) => updateField('footer.iconText', v)} />
               </div>
 
               <ImageUploader label="Footer Logo" src={config.footer?.logo?.src} isUploading={uploadingImage === 'footer.logo.src'} onUpload={(e) => handleImageUpload(e, 'footer.logo.src')} />
-              
+
               <Input label="Address" value={config.footer?.info?.address} onChange={(v) => updateField('footer.info.address', v)} isTextArea />
               <div className="grid grid-cols-2 gap-2 mt-2">
                 <Input label="Phone Label" value={config.footer?.info?.phone?.label} onChange={(v) => updateField('footer.info.phone.label', v)} />
