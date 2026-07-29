@@ -73,7 +73,7 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
 
       {/* Massive Scaled Preview */}
       <div className="relative w-full flex-1 bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
-        <div className="absolute top-0 left-0 w-[1440px] h-[900px] origin-top-left transform scale-[0.70] xl:scale-[0.85] pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-[900px] origin-top-left transform scale-[0.70] xl:scale-[0.85] pointer-events-none">
           <WebsiteOne data={activeData} />
         </div>
       </div>
