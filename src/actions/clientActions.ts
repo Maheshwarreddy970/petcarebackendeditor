@@ -203,6 +203,7 @@ export async function createNewClient(name: string, slug: string) {
     await setDoc(doc(db, "websites", slug), {
       clientName: name,
       slug: slug,
+      paid:false,
       lastUpdated: new Date().toISOString(),
       websiteOneData: defaultWebsiteOneData 
     });

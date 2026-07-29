@@ -7,7 +7,6 @@ export default async function ClientPage({ params }: { params: Promise<{ name: s
 
     // Fetch data from Firebase via the slug
     const dbData = await getWebsiteData(name);
-    console.log(dbData);
     // If no client exists under this slug, throw 404
     if (!dbData) {
         notFound();

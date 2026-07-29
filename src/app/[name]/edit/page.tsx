@@ -219,10 +219,6 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
               <button onClick={() => setActiveTab("visual")} className={`px-4 py-1.5 text-xs rounded font-medium transition-all ${activeTab === "visual" ? "bg-white shadow-sm border border-gray-200 text-black" : "text-gray-500 hover:text-black"}`}>Visual</button>
               <button onClick={() => setActiveTab("json")} className={`px-4 py-1.5 text-xs rounded font-medium transition-all ${activeTab === "json" ? "bg-white shadow-sm border border-gray-200 text-black" : "text-gray-500 hover:text-black"}`}>JSON</button>
             </div>
-            <div className="flex gap-2">
-              <button onClick={handleSave} className="p-2 bg-black text-white rounded hover:bg-gray-800 transition-colors" title="Save">{saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}</button>
-              <button onClick={handleDownload} className="p-2 bg-white border border-gray-200 text-black rounded hover:bg-gray-50 transition-colors" title="Download ZIP">{downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}</button>
-            </div>
           </div>
         </div>
 
