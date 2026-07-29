@@ -37,18 +37,34 @@ const Input = ({ label, value, onChange, isTextArea = false }: { label: string, 
 );
 
 // 🔥 NEW FEATURE: Text Input with Inline Color Picker
-const ColorText = ({ label, textValue, colorValue, onTextChange, onColorChange, isTextArea = false }: any) => (
+const ColorInput = ({ label, colorValue, onColorChange }: any) => (
   <div className="space-y-1.5 w-full">
-    <label className="text-xs font-medium text-gray-500">{label}</label>
-    <div className="flex items-start gap-2">
-      <div className="relative w-9 h-9 rounded border border-gray-300 shrink-0 overflow-hidden shadow-sm" style={{ backgroundColor: colorValue || '#000' }}>
-         <input type="color" value={colorValue || "#000000"} onChange={e => onColorChange(e.target.value)} className="opacity-0 w-full h-full cursor-pointer absolute inset-0" title="Change Color" />
+    {label && <label className="text-xs font-medium text-gray-500">{label}</label>}
+    
+    <div className="flex items-center gap-2">
+      {/* 1. Color Picker Square */}
+      <div 
+        className="relative w-9 h-9 rounded border border-gray-300 shrink-0 overflow-hidden shadow-sm" 
+        style={{ backgroundColor: colorValue || '#000000' }}
+      >
+        <input 
+          type="color" 
+          value={colorValue || "#000000"} 
+          onChange={(e) => onColorChange(e.target.value)} 
+          className="opacity-0 w-full h-full cursor-pointer absolute inset-0" 
+          title="Pick Color" 
+        />
       </div>
-      {isTextArea ? (
-        <textarea value={textValue || ""} onChange={(e) => onTextChange(e.target.value)} className="w-full bg-gray-50 border border-gray-200 p-2.5 rounded text-sm min-h-[80px] outline-none focus:border-black resize-y" />
-      ) : (
-        textValue !== undefined && <input type="text" value={textValue || ""} onChange={(e) => onTextChange(e.target.value)} className="w-full h-9 bg-gray-50 border border-gray-200 px-3 rounded text-sm outline-none focus:border-black" />
-      )}
+      
+      {/* 2. Hex Code Text Input */}
+      <input 
+        type="text" 
+        value={colorValue || ""} 
+        onChange={(e) => onColorChange(e.target.value)} 
+        placeholder="#000000"
+        maxLength={7}
+        className="w-full h-9 bg-gray-50 border border-gray-200 px-3 rounded text-sm font-mono uppercase outline-none focus:border-black" 
+      />
     </div>
   </div>
 );
