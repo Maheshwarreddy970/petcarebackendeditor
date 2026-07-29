@@ -88,7 +88,7 @@ export const ColorText = ({ label, colorValue, onColorChange }: any) => {
 
 // 🔥 NEW FEATURE: Button Configuration (Text, Link, Bg Color, Text Color)
 export const ButtonConfig = ({ label, textVal, hrefVal, bgCol, textCol, onText, onHref, onBg, onCol }: any) => {
-
+  
   // Reusable strict HEX validator. Rejects rgba/hsl and allows only valid hex codes.
   const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>, callback: (val: string) => void) => {
     let val = e.target.value;
@@ -103,16 +103,16 @@ export const ButtonConfig = ({ label, textVal, hrefVal, bgCol, textCol, onText, 
   return (
     <div className="p-3 border border-gray-200 rounded-lg bg-gray-50 space-y-3">
       <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">{label}</label>
-
+      
       {/* Top Row: Text and Link Inputs */}
       <div className="grid grid-cols-2 gap-3">
         <input type="text" placeholder="Button Text" value={textVal || ""} onChange={e => onText(e.target.value)} className="w-full h-9 px-3 border border-gray-200 rounded text-sm outline-none focus:border-black" />
         <input type="text" placeholder="Link (URL)" value={hrefVal || ""} onChange={e => onHref(e.target.value)} className="w-full h-9 px-3 border border-gray-200 rounded text-sm outline-none focus:border-black" />
       </div>
-
+      
       {/* Bottom Row: Color Configs */}
       <div className="grid grid-cols-2 gap-3">
-
+        
         {/* Background Color */}
         <div className="space-y-1">
           <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Background</span>
@@ -120,13 +120,13 @@ export const ButtonConfig = ({ label, textVal, hrefVal, bgCol, textCol, onText, 
             <div className="relative w-8 h-8 rounded border border-gray-300 overflow-hidden shrink-0" style={{ backgroundColor: bgCol || '#000000' }}>
               <input type="color" value={bgCol || "#000000"} onChange={e => onBg(e.target.value)} className="opacity-0 w-full h-full cursor-pointer absolute inset-0" title="Change Background Color" />
             </div>
-            <input
-              type="text"
-              value={bgCol || ""}
-              onChange={e => handleHexChange(e, onBg)}
-              placeholder="#000000"
-              maxLength={7}
-              className="w-full h-8 px-2 bg-white border border-gray-200 rounded text-xs font-mono uppercase outline-none focus:border-black"
+            <input 
+              type="text" 
+              value={bgCol || ""} 
+              onChange={e => handleHexChange(e, onBg)} 
+              placeholder="#000000" 
+              maxLength={7} 
+              className="w-full h-8 px-2 bg-white border border-gray-200 rounded text-xs font-mono uppercase outline-none focus:border-black" 
             />
           </div>
         </div>
@@ -138,13 +138,13 @@ export const ButtonConfig = ({ label, textVal, hrefVal, bgCol, textCol, onText, 
             <div className="relative w-8 h-8 rounded border border-gray-300 overflow-hidden shrink-0" style={{ backgroundColor: textCol || '#ffffff' }}>
               <input type="color" value={textCol || "#ffffff"} onChange={e => onCol(e.target.value)} className="opacity-0 w-full h-full cursor-pointer absolute inset-0" title="Change Text Color" />
             </div>
-            <input
-              type="text"
-              value={textCol || ""}
-              onChange={e => handleHexChange(e, onCol)}
-              placeholder="#FFFFFF"
-              maxLength={7}
-              className="w-full h-8 px-2 bg-white border border-gray-200 rounded text-xs font-mono uppercase outline-none focus:border-black"
+            <input 
+              type="text" 
+              value={textCol || ""} 
+              onChange={e => handleHexChange(e, onCol)} 
+              placeholder="#FFFFFF" 
+              maxLength={7} 
+              className="w-full h-8 px-2 bg-white border border-gray-200 rounded text-xs font-mono uppercase outline-none focus:border-black" 
             />
           </div>
         </div>
@@ -186,42 +186,44 @@ const ImageUploader = ({ label, src, isUploading, onUpload }: { label: string, s
   return (
     <div className="space-y-1.5 w-full">
       <label className="text-xs font-medium text-gray-500">{label}</label>
-
-      <div
+      
+      <div 
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`w-full p-3 rounded-lg border-2 transition-all duration-200 ${isDragOver
-            ? "border-blue-500 bg-blue-50/50 border-dashed scale-[1.02]"
+        className={`w-full p-3 rounded-lg border-2 transition-all duration-200 ${
+          isDragOver 
+            ? "border-blue-500 bg-blue-50/50 border-dashed scale-[1.02]" 
             : "border-gray-200 bg-gray-50/50 border-solid"
-          }`}
+        }`}
       >
         {src && (
-          <img
-            src={src}
+          <img 
+            src={src} 
             alt="Preview"
             // pointer-events-none stops the image from interrupting the drag area
-            className="w-full h-24 object-contain rounded mb-3 border border-gray-200 bg-white shadow-sm pointer-events-none"
+            className="w-full h-24 object-contain rounded mb-3 border border-gray-200 bg-white shadow-sm pointer-events-none" 
           />
         )}
-
-        <label className={`flex items-center justify-center gap-2 w-full p-2 bg-white border border-gray-200 rounded cursor-pointer text-xs font-medium text-gray-700 transition-colors ${isDragOver ? "ring-2 ring-blue-500/20 text-blue-600" : "hover:bg-gray-50"
-          }`}>
+        
+        <label className={`flex items-center justify-center gap-2 w-full p-2 bg-white border border-gray-200 rounded cursor-pointer text-xs font-medium text-gray-700 transition-colors ${
+            isDragOver ? "ring-2 ring-blue-500/20 text-blue-600" : "hover:bg-gray-50"
+        }`}>
           {isUploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-
-          {isUploading
-            ? "Optimizing & Uploading..."
-            : isDragOver
-              ? "Drop image here!"
+          
+          {isUploading 
+            ? "Optimizing & Uploading..." 
+            : isDragOver 
+              ? "Drop image here!" 
               : "Click or Drag Image"
           }
-
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={onUpload}
-            disabled={isUploading}
+          
+          <input 
+            type="file" 
+            accept="image/*" 
+            className="hidden" 
+            onChange={onUpload} 
+            disabled={isUploading} 
           />
         </label>
       </div>
@@ -588,7 +590,8 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
                 </div>
               </Section>
             )}
-{/* REVIEWS SECTION */}
+
+           {/* REVIEWS SECTION */}
             {config.reviews?.columns && (
               <Section title="Reviews">
                 <ColorText 
