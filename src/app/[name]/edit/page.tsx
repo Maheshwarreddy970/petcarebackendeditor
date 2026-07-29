@@ -372,7 +372,6 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
             </div>
             <div className="flex gap-2">
               <button onClick={handleSave} className="p-2 bg-black text-white rounded hover:bg-gray-800 transition-colors" title="Save">{saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}</button>
-              <button onClick={handleDownload} className="p-2 bg-white border border-gray-200 text-black rounded hover:bg-gray-50 transition-colors" title="Download ZIP">{downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}</button>
             </div>
           </div>
         </div>
