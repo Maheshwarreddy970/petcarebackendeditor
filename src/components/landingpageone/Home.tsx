@@ -19,7 +19,7 @@ export default function HeroSection({ data }: { data: any }) {
                 <img
                     src={data.image}
                     alt="Hero Background"
-                    className="absolute inset-0 w-full h-full object-cover object-[70%_center] md:object-center opacity-40 z-0"
+                    className="absolute inset-0 w-full h-full object-cover object-[70%_center] md:object-center  z-0"
                 />
             )}
 
