@@ -154,17 +154,82 @@ export const ButtonConfig = ({ label, textVal, hrefVal, bgCol, textCol, onText, 
   );
 };
 
-const ImageUploader = ({ label, src, isUploading, onUpload }: { label: string, src: string, isUploading: boolean, onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void }) => (
-  <div className="border border-gray-200 p-3 rounded-lg bg-gray-50/50 w-full">
-    <label className="text-xs font-medium text-gray-500 mb-2 block">{label}</label>
-    {src && <img src={src} className="w-full h-24 object-contain rounded mb-3 border border-gray-200 bg-white shadow-sm" />}
-    <label className="flex items-center justify-center gap-2 w-full p-2 bg-white border border-gray-200 rounded cursor-pointer hover:bg-gray-50 text-xs font-medium text-gray-700 transition-colors">
-      {isUploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-      {isUploading ? "Optimizing & Uploading..." : "Upload Image"}
-      <input type="file" accept="image/*" className="hidden" onChange={onUpload} disabled={isUploading} />
-    </label>
-  </div>
-);
+const ImageUploader = ({ label, src, isUploading, onUpload }: { label: string, src: string, isUploading: boolean, onUpload: (e: React.ChangeEvent<HTMLInputElement> | any) => void }) => {
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      // Mocks the React ChangeEvent so your existing handleImageUpload function works instantly
+      const mockEvent = {
+        target: { files: e.dataTransfer.files }
+      };
+      onUpload(mockEvent);
+    }
+  };
+
+  return (
+    <div className="space-y-1.5 w-full">
+      <label className="text-xs font-medium text-gray-500">{label}</label>
+      
+      <div 
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className={`w-full p-3 rounded-lg border-2 transition-all duration-200 ${
+          isDragOver 
+            ? "border-blue-500 bg-blue-50/50 border-dashed scale-[1.02]" 
+            : "border-gray-200 bg-gray-50/50 border-solid"
+        }`}
+      >
+        {src && (
+          <img 
+            src={src} 
+            alt="Preview"
+            // pointer-events-none stops the image from interrupting the drag area
+            className="w-full h-24 object-contain rounded mb-3 border border-gray-200 bg-white shadow-sm pointer-events-none" 
+          />
+        )}
+        
+        <label className={`flex items-center justify-center gap-2 w-full p-2 bg-white border border-gray-200 rounded cursor-pointer text-xs font-medium text-gray-700 transition-colors ${
+            isDragOver ? "ring-2 ring-blue-500/20 text-blue-600" : "hover:bg-gray-50"
+        }`}>
+          {isUploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+          
+          {isUploading 
+            ? "Optimizing & Uploading..." 
+            : isDragOver 
+              ? "Drop image here!" 
+              : "Click or Drag Image"
+          }
+          
+          <input 
+            type="file" 
+            accept="image/*" 
+            className="hidden" 
+            onChange={onUpload} 
+            disabled={isUploading} 
+          />
+        </label>
+      </div>
+    </div>
+  );
+};
 
 export default function EditPage({ params }: { params: Promise<{ name: string }> }) {
   const { name } = use(params);
