@@ -1,7 +1,6 @@
 import React from 'react';
 import { Star, Smile } from 'lucide-react';
 
-// Pass the dynamic color to the stars
 const FiveStars = ({ color }: { color?: string }) => (
     <div className="flex items-center gap-1">
         {[...Array(5)].map((_, i) => (
@@ -27,35 +26,37 @@ const fallbackStatImageCard = {
     iconColor: '#ffffff'
 };
 
-// Helper renderer for individual card types with dynamic styling
 const CardRenderer = ({ card }: { card: any }) => {
+    // 1. STAT NUMERIC CARD (e.g., 4.96/5)
     if (card.type === 'stat-numeric') {
         return (
             <div 
-                className="rounded-2xl p-8 flex flex-col items-center justify-center text-center min-h-[280px]"
+                className="rounded-2xl p-8 flex flex-col items-center justify-center text-center min-h-[280px] shadow-sm"
                 style={{ backgroundColor: card.bg || '#a35c38' }}
             >
                 <h3 
                     className="font-medium text-[48px] tracking-[-1px] mb-4"
                     style={{ color: card.scoreColor || '#ffffff' }}
                 >
-                    {card.score}<span className="text-[36px]">{card.scale}</span>
+                    {card.score || '4.96'}
+                    <span className="text-[36px] ml-0.5">{card.scale || '/5'}</span>
                 </h3>
                 <FiveStars color={card.starColor || '#ffffff'} />
                 <p 
                     className="text-[14px] mt-3 opacity-90 font-medium"
                     style={{ color: card.textColor || '#ffffff' }}
                 >
-                    {card.subtext}
+                    {card.subtext || '5-Star Reviews'}
                 </p>
             </div>
         );
     }
 
+    // 2. STAT IMAGE CARD (e.g., 1200+ Happy Pets)
     if (card.type === 'stat-image') {
         return (
             <div 
-                className="relative rounded-2xl overflow-hidden min-h-[280px] group"
+                className="relative rounded-2xl overflow-hidden min-h-[280px] group shadow-sm"
                 style={{ backgroundColor: card.bg || '#111111' }}
             >
                 {card.image && (
@@ -75,26 +76,26 @@ const CardRenderer = ({ card }: { card: any }) => {
                         className="font-medium text-[40px] tracking-tight mb-1"
                         style={{ color: card.textColor || '#ffffff' }}
                     >
-                        {card.heading}
+                        {card.heading || '1200+'}
                     </h3>
                     <p 
                         className="text-[16px] font-medium"
                         style={{ color: card.textColor || '#ffffff' }}
                     >
-                        {card.subtext}
+                        {card.subtext || 'Happy Pets Delivered'}
                     </p>
                 </div>
             </div>
         );
     }
 
-    // Default 'review' card
+    // 3. REVIEW CARD (Default)
     return (
         <div 
-            className="border rounded-2xl p-8 flex flex-col justify-between min-h-[280px] h-full"
+            className="border rounded-2xl p-8 flex flex-col justify-between min-h-[280px] h-full shadow-sm"
             style={{ 
                 backgroundColor: card.bg || '#faf3ec',
-                borderColor: card.borderColor || '#ece5de' // Optional: let border match or fallback
+                borderColor: card.borderColor || '#ece5de'
             }}
         >
             <div>
@@ -103,7 +104,7 @@ const CardRenderer = ({ card }: { card: any }) => {
                     className="text-[16px] leading-[1.6] mt-6"
                     style={{ color: card.textColor || '#625b5b' }}
                 >
-                    {card.text}
+                    {card.text || 'Great grooming experience!'}
                 </p>
             </div>
             <div className="flex items-center gap-4 mt-8">
@@ -138,18 +139,15 @@ const CardRenderer = ({ card }: { card: any }) => {
 export default function ReviewsSection({ data }: { data?: any }) {
     if (!data) return null;
 
-    // 1. Merge top-level data safely
     const heading = data.heading || "The reviews say it all";
     const description = data.description || "Our rating truly speaks for itself.";
 
     const rawCols = data.columns || {};
 
-    // 2. Extract columns with fallbacks
     let col1 = [...(rawCols.col1 || [])];
     let col2 = [...(rawCols.col2 || [])];
     let col3 = [...(rawCols.col3 || [])];
 
-    // 3. Ensure the `stat-image` card is present in at least one column
     const allCards = [...col1, ...col2, ...col3];
     const hasStatImage = allCards.some((card) => card.type === 'stat-image');
 
