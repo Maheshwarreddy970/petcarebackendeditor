@@ -36,8 +36,8 @@ const Input = ({ label, value, onChange, isTextArea = false }: { label: string, 
   </div>
 );
 
-// 🔥 NEW FEATURE: Text Input with Inline Color Picker
-export const ColorText = ({ label, colorValue, onColorChange }: any) => {
+// 🔥 FIXED FEATURE: Text Input with Inline Color Picker (Now shows BOTH text and color inputs)
+export const ColorText = ({ label, textValue, colorValue, onTextChange, onColorChange, isTextArea = false }: any) => {
   // Strictly enforce HEX only. Rejects any attempt to type rgba or hsl.
   const handleHexInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value;
@@ -55,11 +55,21 @@ export const ColorText = ({ label, colorValue, onColorChange }: any) => {
   return (
     <div className="space-y-1.5 w-full">
       <label className="text-xs font-medium text-gray-500">{label}</label>
-      <div className="flex items-start gap-2">
+      
+      {/* 1. TEXT CONTENT INPUT (Restored) */}
+      {onTextChange && (
+        isTextArea ? (
+          <textarea value={textValue || ""} onChange={(e) => onTextChange(e.target.value)} className="w-full bg-gray-50 border border-gray-200 p-2.5 rounded text-sm min-h-[80px] outline-none focus:border-black resize-y mb-1" />
+        ) : (
+          <input type="text" value={textValue || ""} onChange={(e) => onTextChange(e.target.value)} className="w-full h-9 bg-gray-50 border border-gray-200 px-3 rounded text-sm outline-none focus:border-black mb-1" />
+        )
+      )}
 
+      {/* 2. STRICT HEX COLOR PICKER */}
+      <div className="flex items-center gap-2">
         {/* Color Pencil / Picker */}
         <div
-          className="relative w-9 h-9 rounded border border-gray-300 shrink-0 overflow-hidden shadow-sm"
+          className="relative w-8 h-8 rounded border border-gray-300 shrink-0 overflow-hidden shadow-sm"
           style={{ backgroundColor: colorValue || '#000000' }}
         >
           <input
@@ -78,9 +88,9 @@ export const ColorText = ({ label, colorValue, onColorChange }: any) => {
           onChange={handleHexInputChange}
           placeholder="#000000"
           maxLength={7}
-          className="w-full h-9 bg-gray-50 border border-gray-200 px-3 rounded text-sm outline-none focus:border-black"
+          className="w-24 h-8 bg-white border border-gray-200 px-2 rounded text-xs font-mono uppercase outline-none focus:border-black"
         />
-
+        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Color</span>
       </div>
     </div>
   );
@@ -359,6 +369,10 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
             <div className="flex bg-gray-50 border border-gray-200 rounded p-1">
               <button onClick={() => setActiveTab("visual")} className={`px-4 py-1.5 text-xs rounded font-medium transition-all ${activeTab === "visual" ? "bg-white shadow-sm border border-gray-200 text-black" : "text-gray-500 hover:text-black"}`}>Visual</button>
               <button onClick={() => setActiveTab("json")} className={`px-4 py-1.5 text-xs rounded font-medium transition-all ${activeTab === "json" ? "bg-white shadow-sm border border-gray-200 text-black" : "text-gray-500 hover:text-black"}`}>JSON</button>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={handleSave} className="p-2 bg-black text-white rounded hover:bg-gray-800 transition-colors" title="Save">{saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}</button>
+              <button onClick={handleDownload} className="p-2 bg-white border border-gray-200 text-black rounded hover:bg-gray-50 transition-colors" title="Download ZIP">{downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}</button>
             </div>
           </div>
         </div>
