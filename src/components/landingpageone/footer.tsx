@@ -10,6 +10,7 @@ export default function Footer({ data }: { data: any }) {
 
     return (
         <footer 
+        id='#footer'
             className="px-6 pt-28 pb-16 font-sans overflow-hidden"
             style={{ backgroundColor: data.bg }}
         >

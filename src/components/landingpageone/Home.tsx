@@ -10,7 +10,8 @@ export default function HeroSection({ data }: { data: any }) {
     const starCount = Number.isFinite(parsedStars) ? Math.max(0, Math.floor(parsedStars)) : 5;
 
     return (
-        <section 
+        <section
+        id='#home' 
             className="relative w-full lg:min-h-[115vh] h-screen flex md:items-center items-end overflow-hidden"
             style={{ backgroundColor: data.bg }} // Real-time background color
         >

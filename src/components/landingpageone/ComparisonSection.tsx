@@ -6,6 +6,7 @@ export default function ComparisonSection({ data }: { data: any }) {
 
     return (
         <section 
+        id='#comparison'
             className="py-20 w-full overflow-hidden"
             style={{ backgroundColor: data.bg || '#ffffff' }}
         >

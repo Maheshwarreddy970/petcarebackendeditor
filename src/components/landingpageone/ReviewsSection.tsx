@@ -159,6 +159,7 @@ export default function ReviewsSection({ data }: { data?: any }) {
 
     return (
         <section 
+        id='#reviews'
             className="py-20 w-full overflow-hidden"
             style={{ backgroundColor: data.bg || '#fffaf8' }}
         >

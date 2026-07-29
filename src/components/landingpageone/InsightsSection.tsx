@@ -7,6 +7,7 @@ export default function InsightsSection({ data }: { data: any }) {
 
     return (
         <section 
+        id='#insights'
             className="py-20 w-full overflow-hidden" 
             style={{ backgroundColor: data.bg }}
         >

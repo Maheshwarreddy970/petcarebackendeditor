@@ -16,13 +16,34 @@ const defaultWebsiteOneData = {
     linkHoverColor: "#1e0c05",
     logo: { src: `${CLOUD_URL}/0cGSckUnYfQekLfhg0llimhDCf4_bdsxhs.png`, alt: "Petocare Logo", status: "approved" },
     cta: { label: "Schedule a visit", href: "#", bg: "#a35c38", text: "#ffffff" },
-    links: [
-      { href: "/", label: "Home", icon: "Home" },
-      { href: "./websitetwo/services", label: "Services", icon: "Briefcase" },
-      { href: "/bookings", label: "Bookings", icon: "Calendar" },
-      { href: "/pets", label: "Pets", icon: "Dog" },
-      { href: "/profile", label: "Profile", icon: "User" }
-    ]
+"links": [
+      {
+        "label": "Home",
+        "href": "#home",
+        "icon": "Home"
+      },
+ {
+        "href": "#gallery",
+        "label": "Gallery",
+        "icon": "Calendar"
+      },
+      {
+        "label": "Services",
+        "href": "#services",
+        "icon": "Briefcase"
+      },
+     
+      {
+        "label": "Process",
+        "href": "#process",
+        "icon": "Dog"
+      },
+      {
+        "icon": "Reviews ",
+        "label": "reviews",
+        "href": "#reviews "
+      }
+    ],
   },
   hero: {
     bg: "#fffaf8",

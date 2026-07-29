@@ -10,6 +10,7 @@ export default function StatsBanner({ data }: { data: any }) {
 
     return (
         <section 
+        id='#number'
             className="py-16 md:py-20 w-full overflow-hidden"
             style={{ backgroundColor: data.bg }}
         >

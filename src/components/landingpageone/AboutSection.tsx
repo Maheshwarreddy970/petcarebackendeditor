@@ -5,6 +5,7 @@ export default function AboutSection({ data }: { data: any }) {
 
     return (
         <section 
+        id='#about'
             className="py-20 w-full overflow-hidden" 
             style={{ backgroundColor: data.bg }}
         >

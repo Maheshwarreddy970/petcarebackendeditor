@@ -8,6 +8,7 @@ export default function CtaSection({ data }: { data: any }) {
 
     return (
         <section 
+        id='#cta'
             className="relative w-full overflow-hidden px-6 py-20 md:px-12 md:py-32 lg:px-20"
             style={{ backgroundColor: data.bg }}
         >

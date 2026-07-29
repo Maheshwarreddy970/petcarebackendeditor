@@ -6,6 +6,7 @@ export default function GallerySection({ data }: { data: any }) {
 
     return (
         <section 
+        id='#gallery'
             className="py-20 w-full overflow-hidden"
             style={{ backgroundColor: data.bg || '#fffaf8' }}
         >

@@ -5,6 +5,7 @@ export default function ProcessSection({ data }: { data: any }) {
 
     return (
         <section 
+        id='#process'
             className="py-20 w-full overflow-hidden"
             style={{ backgroundColor: data.bg }}
         >

@@ -42,6 +42,7 @@ export default function ServicesSection({ data }: { data: any }) {
 
     return (
         <section 
+        id='#services'
             className="py-20 w-full overflow-hidden"
             style={{ backgroundColor: data.bg }}
         >
