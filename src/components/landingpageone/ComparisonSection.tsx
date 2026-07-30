@@ -60,7 +60,7 @@ export default function ComparisonSection({ data }: { data: any }) {
                     </div>
 
                     {/* VS Badge */}
-                    <div className="absolute md:mt-0 -mt-8 left-1/2 -rotate-10 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center">
+                    <div className="absolute md:mt-0 16 left-1/2 -rotate-10 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center">
                         <div 
                             className="rounded-full w-[60px] h-[60px] md:w-[64px] md:h-[64px] border-[4px] flex items-center justify-center shadow-md"
                             style={{ 
