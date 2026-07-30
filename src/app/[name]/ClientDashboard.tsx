@@ -81,7 +81,7 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
       </div>
 
       {/* Browser Mockup Card Container */}
-      <div className="w-full max-w-8xl mx-auto mt-8 flex flex-col bg-white rounded-2xl shadow-2xl border border-gray-300 overflow-hidden ring-1 ring-black/5">
+      <div className="w-full max-w-8xl mx-auto mt-10 flex flex-col bg-white rounded-2xl shadow-2xl border border-gray-300 overflow-hidden ring-1 ring-black/5">
         
         {/* Safari/Chrome Fake Header Bar */}
         <div className="h-14 bg-gray-100/80 border-b border-gray-200 flex items-center px-4 justify-between select-none">
