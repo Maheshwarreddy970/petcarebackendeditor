@@ -25,7 +25,7 @@ export default function HeroSection({ data }: { data: any }) {
             )}
 
             <div className="relative z-10 w-full mx-auto px-6 md:px-12 lg:px-0 lg:ml-[10%]">
-                <div className="flex flex-col max-w-[620px] py-20">
+                <div className="flex flex-col max-w-[620px] mb-14 md:mb-0 py-20">
 
                     <div className="flex flex-col gap-6 md:gap-8">
                         {/* Heading - Inline styling maps to data.headingColor */}
