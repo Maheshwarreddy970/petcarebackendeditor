@@ -201,8 +201,8 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
           
           {/* 🔥 OVERLAY: If NOT deployed, show the Glass Modal on top of the scrolling site 🔥 */}
           {!isDeployed && (
-            <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/40 backdrop-blur-md">
-              <div className="w-full max-w-lg mx-auto bg-white/95 p-12 rounded-3xl shadow-2xl border border-white text-center flex flex-col items-center ring-1 ring-black/5">
+            <div className="absolute inset-0 z-50 flex items-center justify-center ">
+              <div className="w-full max-w-lg mx-auto bg-white p-12 rounded-3xl shadow-2xl border border-white text-center flex flex-col items-center ring-1 ring-black/5">
                 <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
                   <Server className="w-10 h-10 text-blue-600" />
                 </div>
@@ -238,7 +238,7 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
           )}
 
           {/* The Website - Has 'animate-auto-scroll' if not deployed */}
-          <div id="live-preview-box" className={`w-full bg-white min-h-full flex flex-col relative origin-top ${!isDeployed ? 'animate-auto-scroll opacity-60 pointer-events-none' : ''}`}>
+          <div id="live-preview-box" className={`w-full bg-white min-h-full flex flex-col relative origin-top ${!isDeployed ? 'animate-auto-scroll  pointer-events-none' : ''}`}>
             <WebsiteOne data={activeData} />
           </div>
 
