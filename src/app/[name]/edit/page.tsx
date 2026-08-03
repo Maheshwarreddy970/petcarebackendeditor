@@ -55,7 +55,7 @@ export const ColorText = ({ label, textValue, colorValue, onTextChange, onColorC
   return (
     <div className="space-y-1.5 w-full">
       <label className="text-xs font-medium text-gray-500">{label}</label>
-      
+
       {/* 1. TEXT CONTENT INPUT (Restored) */}
       {onTextChange && (
         isTextArea ? (
@@ -98,7 +98,7 @@ export const ColorText = ({ label, textValue, colorValue, onTextChange, onColorC
 
 // 🔥 NEW FEATURE: Button Configuration (Text, Link, Bg Color, Text Color)
 export const ButtonConfig = ({ label, textVal, hrefVal, bgCol, textCol, onText, onHref, onBg, onCol }: any) => {
-  
+
   // Reusable strict HEX validator. Rejects rgba/hsl and allows only valid hex codes.
   const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>, callback: (val: string) => void) => {
     let val = e.target.value;
@@ -113,16 +113,16 @@ export const ButtonConfig = ({ label, textVal, hrefVal, bgCol, textCol, onText, 
   return (
     <div className="p-3 border border-gray-200 rounded-lg bg-gray-50 space-y-3">
       <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">{label}</label>
-      
+
       {/* Top Row: Text and Link Inputs */}
       <div className="grid grid-cols-2 gap-3">
         <input type="text" placeholder="Button Text" value={textVal || ""} onChange={e => onText(e.target.value)} className="w-full h-9 px-3 border border-gray-200 rounded text-sm outline-none focus:border-black" />
         <input type="text" placeholder="Link (URL)" value={hrefVal || ""} onChange={e => onHref(e.target.value)} className="w-full h-9 px-3 border border-gray-200 rounded text-sm outline-none focus:border-black" />
       </div>
-      
+
       {/* Bottom Row: Color Configs */}
       <div className="grid grid-cols-2 gap-3">
-        
+
         {/* Background Color */}
         <div className="space-y-1">
           <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Background</span>
@@ -130,13 +130,13 @@ export const ButtonConfig = ({ label, textVal, hrefVal, bgCol, textCol, onText, 
             <div className="relative w-8 h-8 rounded border border-gray-300 overflow-hidden shrink-0" style={{ backgroundColor: bgCol || '#000000' }}>
               <input type="color" value={bgCol || "#000000"} onChange={e => onBg(e.target.value)} className="opacity-0 w-full h-full cursor-pointer absolute inset-0" title="Change Background Color" />
             </div>
-            <input 
-              type="text" 
-              value={bgCol || ""} 
-              onChange={e => handleHexChange(e, onBg)} 
-              placeholder="#000000" 
-              maxLength={7} 
-              className="w-full h-8 px-2 bg-white border border-gray-200 rounded text-xs font-mono uppercase outline-none focus:border-black" 
+            <input
+              type="text"
+              value={bgCol || ""}
+              onChange={e => handleHexChange(e, onBg)}
+              placeholder="#000000"
+              maxLength={7}
+              className="w-full h-8 px-2 bg-white border border-gray-200 rounded text-xs font-mono uppercase outline-none focus:border-black"
             />
           </div>
         </div>
@@ -148,13 +148,13 @@ export const ButtonConfig = ({ label, textVal, hrefVal, bgCol, textCol, onText, 
             <div className="relative w-8 h-8 rounded border border-gray-300 overflow-hidden shrink-0" style={{ backgroundColor: textCol || '#ffffff' }}>
               <input type="color" value={textCol || "#ffffff"} onChange={e => onCol(e.target.value)} className="opacity-0 w-full h-full cursor-pointer absolute inset-0" title="Change Text Color" />
             </div>
-            <input 
-              type="text" 
-              value={textCol || ""} 
-              onChange={e => handleHexChange(e, onCol)} 
-              placeholder="#FFFFFF" 
-              maxLength={7} 
-              className="w-full h-8 px-2 bg-white border border-gray-200 rounded text-xs font-mono uppercase outline-none focus:border-black" 
+            <input
+              type="text"
+              value={textCol || ""}
+              onChange={e => handleHexChange(e, onCol)}
+              placeholder="#FFFFFF"
+              maxLength={7}
+              className="w-full h-8 px-2 bg-white border border-gray-200 rounded text-xs font-mono uppercase outline-none focus:border-black"
             />
           </div>
         </div>
@@ -196,44 +196,42 @@ const ImageUploader = ({ label, src, isUploading, onUpload }: { label: string, s
   return (
     <div className="space-y-1.5 w-full">
       <label className="text-xs font-medium text-gray-500">{label}</label>
-      
-      <div 
+
+      <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`w-full p-3 rounded-lg border-2 transition-all duration-200 ${
-          isDragOver 
-            ? "border-blue-500 bg-blue-50/50 border-dashed scale-[1.02]" 
-            : "border-gray-200 bg-gray-50/50 border-solid"
-        }`}
+        className={`w-full p-3 rounded-lg border-2 transition-all duration-200 ${isDragOver
+          ? "border-blue-500 bg-blue-50/50 border-dashed scale-[1.02]"
+          : "border-gray-200 bg-gray-50/50 border-solid"
+          }`}
       >
         {src && (
-          <img 
-            src={src} 
+          <img
+            src={src}
             alt="Preview"
             // pointer-events-none stops the image from interrupting the drag area
-            className="w-full h-24 object-contain rounded mb-3 border border-gray-200 bg-white shadow-sm pointer-events-none" 
+            className="w-full h-24 object-contain rounded mb-3 border border-gray-200 bg-white shadow-sm pointer-events-none"
           />
         )}
-        
-        <label className={`flex items-center justify-center gap-2 w-full p-2 bg-white border border-gray-200 rounded cursor-pointer text-xs font-medium text-gray-700 transition-colors ${
-            isDragOver ? "ring-2 ring-blue-500/20 text-blue-600" : "hover:bg-gray-50"
-        }`}>
+
+        <label className={`flex items-center justify-center gap-2 w-full p-2 bg-white border border-gray-200 rounded cursor-pointer text-xs font-medium text-gray-700 transition-colors ${isDragOver ? "ring-2 ring-blue-500/20 text-blue-600" : "hover:bg-gray-50"
+          }`}>
           {isUploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-          
-          {isUploading 
-            ? "Optimizing & Uploading..." 
-            : isDragOver 
-              ? "Drop image here!" 
+
+          {isUploading
+            ? "Optimizing & Uploading..."
+            : isDragOver
+              ? "Drop image here!"
               : "Click or Drag Image"
           }
-          
-          <input 
-            type="file" 
-            accept="image/*" 
-            className="hidden" 
-            onChange={onUpload} 
-            disabled={isUploading} 
+
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={onUpload}
+            disabled={isUploading}
           />
         </label>
       </div>
@@ -604,36 +602,38 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
               </Section>
             )}
 
-           {/* REVIEWS SECTION */}
+            {/* REVIEWS SECTION */}
+            {/* REVIEWS SECTION */}
             {config.reviews?.columns && (
               <Section title="Reviews">
-                <ColorText 
-                  label="Section Background" 
-                  colorValue={config.reviews?.bg} 
-                  onColorChange={(v: string) => updateField('reviews.bg', v)} 
+                <ColorText
+                  label="Section Background"
+                  colorValue={config.reviews?.bg}
+                  onColorChange={(v: string) => updateField('reviews.bg', v)}
                 />
-                <ColorText 
-                  label="Heading" 
-                  textValue={config.reviews?.heading} 
-                  colorValue={config.reviews?.headingColor} 
-                  onTextChange={(v: string) => updateField('reviews.heading', v)} 
-                  onColorChange={(v: string) => updateField('reviews.headingColor', v)} 
+                <ColorText
+                  label="Heading"
+                  textValue={config.reviews?.heading}
+                  colorValue={config.reviews?.headingColor}
+                  onTextChange={(v: string) => updateField('reviews.heading', v)}
+                  onColorChange={(v: string) => updateField('reviews.headingColor', v)}
                 />
-                <ColorText 
-                  label="Description" 
-                  textValue={config.reviews?.description} 
-                  colorValue={config.reviews?.descColor} 
-                  onTextChange={(v: string) => updateField('reviews.description', v)} 
-                  onColorChange={(v: string) => updateField('reviews.descColor', v)} 
-                  isTextArea 
+                {/* 🔥 FIX: isTextArea={true} explicitly ensures the large text box renders */}
+                <ColorText
+                  label="Description"
+                  textValue={config.reviews?.description}
+                  colorValue={config.reviews?.descColor}
+                  onTextChange={(v: string) => updateField('reviews.description', v)}
+                  onColorChange={(v: string) => updateField('reviews.descColor', v)}
+                  isTextArea={true}
                 />
-                
+
                 {['col1', 'col2', 'col3'].map((col) => (
                   <div key={col} className="mt-6 space-y-3">
                     <label className="text-xs font-bold text-gray-500 uppercase flex justify-between items-center border-b border-gray-100 pb-2">
                       {col.toUpperCase()} Cards
-                      <button 
-                        onClick={() => addArrayItem(`reviews.columns.${col}`, { type: 'review', name: 'New Client', role: 'Pet Parent', text: 'Great grooming experience!', avatar: '', bg: '#faf3ec', textColor: '#625b5b', titleColor: '#1e0c05', starColor: '#8c863a' })} 
+                      <button
+                        onClick={() => addArrayItem(`reviews.columns.${col}`, { type: 'review', name: 'New Client', role: 'Pet Parent', text: 'Great grooming experience!', avatar: '', bg: '#faf3ec', textColor: '#625b5b', titleColor: '#1e0c05', starColor: '#8c863a' })}
                         className="text-blue-600 hover:text-blue-700 flex items-center gap-1 font-semibold"
                       >
                         <Plus size={14} /> Add Card
@@ -642,8 +642,8 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
 
                     {config.reviews.columns[col]?.map((item: any, i: number) => (
                       <div key={i} className="border border-gray-200 p-4 rounded-lg bg-gray-50 space-y-3 relative group">
-                        <button 
-                          onClick={() => removeArrayItem(`reviews.columns.${col}`, i)} 
+                        <button
+                          onClick={() => removeArrayItem(`reviews.columns.${col}`, i)}
                           className="p-1.5 text-red-400 hover:text-red-600 absolute right-2 top-2 bg-white border border-gray-200 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
                           title="Delete Card"
                         >
@@ -652,9 +652,9 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
 
                         <div className="flex justify-between items-center bg-white p-2 rounded border border-gray-200">
                           <label className="text-xs font-medium text-gray-500">Card Type</label>
-                          <select 
-                            value={item.type || 'review'} 
-                            onChange={(e) => updateField(`reviews.columns.${col}[${i}].type`, e.target.value)} 
+                          <select
+                            value={item.type || 'review'}
+                            onChange={(e) => updateField(`reviews.columns.${col}[${i}].type`, e.target.value)}
                             className="bg-transparent text-xs font-semibold outline-none cursor-pointer"
                           >
                             <option value="review">Review Card</option>
@@ -663,45 +663,46 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
                           </select>
                         </div>
 
-                        <ColorText 
-                          label="Card Background" 
-                          colorValue={item.bg} 
-                          onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].bg`, v)} 
+                        <ColorText
+                          label="Card Background"
+                          colorValue={item.bg}
+                          onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].bg`, v)}
                         />
 
                         {/* 1. REVIEW CARD CONTROLS */}
                         {item.type === 'review' && (
                           <>
-                            <ColorText 
-                              label="Client Name & Color" 
-                              textValue={item.name} 
-                              colorValue={item.titleColor} 
-                              onTextChange={(v: string) => updateField(`reviews.columns.${col}[${i}].name`, v)} 
-                              onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].titleColor`, v)} 
+                            <ColorText
+                              label="Client Name"
+                              textValue={item.name}
+                              colorValue={item.titleColor}
+                              onTextChange={(v: string) => updateField(`reviews.columns.${col}[${i}].name`, v)}
+                              onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].titleColor`, v)}
                             />
-                            <Input 
-                              label="Role / Subtitle" 
-                              value={item.role} 
-                              onChange={(v) => updateField(`reviews.columns.${col}[${i}].role`, v)} 
+                            <Input
+                              label="Role / Subtitle"
+                              value={item.role}
+                              onChange={(v) => updateField(`reviews.columns.${col}[${i}].role`, v)}
                             />
-                            <ColorText 
-                              label="Review Text & Color" 
-                              textValue={item.text} 
-                              colorValue={item.textColor} 
-                              onTextChange={(v: string) => updateField(`reviews.columns.${col}[${i}].text`, v)} 
-                              onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].textColor`, v)} 
-                              isTextArea 
+                            {/* 🔥 FIX: explicitly defining isTextArea={true} for the review quote */}
+                            <ColorText
+                              label="Review Text"
+                              textValue={item.text}
+                              colorValue={item.textColor}
+                              onTextChange={(v: string) => updateField(`reviews.columns.${col}[${i}].text`, v)}
+                              onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].textColor`, v)}
+                              isTextArea={true}
                             />
-                            <ColorText 
-                              label="Star Rating Color" 
-                              colorValue={item.starColor} 
-                              onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].starColor`, v)} 
+                            <ColorText
+                              label="Star Rating Color"
+                              colorValue={item.starColor}
+                              onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].starColor`, v)}
                             />
-                            <ImageUploader 
-                              label="Avatar Image" 
-                              src={item.avatar} 
-                              isUploading={uploadingImage === `reviews.columns.${col}[${i}].avatar`} 
-                              onUpload={(e) => handleImageUpload(e, `reviews.columns.${col}[${i}].avatar`)} 
+                            <ImageUploader
+                              label="Avatar Image"
+                              src={item.avatar}
+                              isUploading={uploadingImage === `reviews.columns.${col}[${i}].avatar`}
+                              onUpload={(e) => handleImageUpload(e, `reviews.columns.${col}[${i}].avatar`)}
                             />
                           </>
                         )}
@@ -709,29 +710,30 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
                         {/* 2. NUMERIC STAT CARD CONTROLS */}
                         {item.type === 'stat-numeric' && (
                           <>
-                            <ColorText 
-                              label="Score Value (e.g. 4.96)" 
-                              textValue={item.score} 
-                              colorValue={item.scoreColor} 
-                              onTextChange={(v: string) => updateField(`reviews.columns.${col}[${i}].score`, v)} 
-                              onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].scoreColor`, v)} 
+                            <ColorText
+                              label="Score Value (e.g. 4.96)"
+                              textValue={item.score}
+                              colorValue={item.scoreColor}
+                              onTextChange={(v: string) => updateField(`reviews.columns.${col}[${i}].score`, v)}
+                              onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].scoreColor`, v)}
                             />
-                            <Input 
-                              label="Scale (e.g. /5)" 
-                              value={item.scale} 
-                              onChange={(v) => updateField(`reviews.columns.${col}[${i}].scale`, v)} 
+                            {/* 🔥 FIX: explicitly mapping the /5 scale input */}
+                            <Input
+                              label="Scale (e.g. /5)"
+                              value={item.scale}
+                              onChange={(v) => updateField(`reviews.columns.${col}[${i}].scale`, v)}
                             />
-                            <ColorText 
-                              label="Subtext & Color" 
-                              textValue={item.subtext} 
-                              colorValue={item.textColor} 
-                              onTextChange={(v: string) => updateField(`reviews.columns.${col}[${i}].subtext`, v)} 
-                              onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].textColor`, v)} 
+                            <ColorText
+                              label="Subtext"
+                              textValue={item.subtext}
+                              colorValue={item.textColor}
+                              onTextChange={(v: string) => updateField(`reviews.columns.${col}[${i}].subtext`, v)}
+                              onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].textColor`, v)}
                             />
-                            <ColorText 
-                              label="Star Rating Color" 
-                              colorValue={item.starColor} 
-                              onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].starColor`, v)} 
+                            <ColorText
+                              label="Star Rating Color"
+                              colorValue={item.starColor}
+                              onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].starColor`, v)}
                             />
                           </>
                         )}
@@ -739,28 +741,28 @@ export default function EditPage({ params }: { params: Promise<{ name: string }>
                         {/* 3. IMAGE STAT CARD CONTROLS */}
                         {item.type === 'stat-image' && (
                           <>
-                            <ColorText 
-                              label="Heading & Color" 
-                              textValue={item.heading} 
-                              colorValue={item.textColor} 
-                              onTextChange={(v: string) => updateField(`reviews.columns.${col}[${i}].heading`, v)} 
-                              onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].textColor`, v)} 
+                            <ColorText
+                              label="Heading"
+                              textValue={item.heading}
+                              colorValue={item.textColor}
+                              onTextChange={(v: string) => updateField(`reviews.columns.${col}[${i}].heading`, v)}
+                              onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].textColor`, v)}
                             />
-                            <Input 
-                              label="Subtext" 
-                              value={item.subtext} 
-                              onChange={(v) => updateField(`reviews.columns.${col}[${i}].subtext`, v)} 
+                            <Input
+                              label="Subtext"
+                              value={item.subtext}
+                              onChange={(v) => updateField(`reviews.columns.${col}[${i}].subtext`, v)}
                             />
-                            <ColorText 
-                              label="Smile Icon Color" 
-                              colorValue={item.iconColor} 
-                              onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].iconColor`, v)} 
+                            <ColorText
+                              label="Smile Icon Color"
+                              colorValue={item.iconColor}
+                              onColorChange={(v: string) => updateField(`reviews.columns.${col}[${i}].iconColor`, v)}
                             />
-                            <ImageUploader 
-                              label="Background Image" 
-                              src={item.image} 
-                              isUploading={uploadingImage === `reviews.columns.${col}[${i}].image`} 
-                              onUpload={(e) => handleImageUpload(e, `reviews.columns.${col}[${i}].image`)} 
+                            <ImageUploader
+                              label="Background Image"
+                              src={item.image}
+                              isUploading={uploadingImage === `reviews.columns.${col}[${i}].image`}
+                              onUpload={(e) => handleImageUpload(e, `reviews.columns.${col}[${i}].image`)}
                             />
                           </>
                         )}
