@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { LayoutTemplate, Code, Download, ExternalLink, Loader2, Lock } from "lucide-react";
 import merge from "lodash/merge";
@@ -15,6 +15,42 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
   const [downloading, setDownloading] = useState(false);
   const paid = dbData?.paid;
   const activeData = merge({}, dbData?.websiteOneData || {});
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Smooth infinite auto-scroll loop (down and up like a video preview)
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    let animationFrameId: number;
+    let direction = 1; // 1 = down, -1 = up
+    const speed = 0.6; // Adjust speed here
+
+    const scrollLoop = () => {
+      if (!container) return;
+
+      container.scrollTop += direction * speed;
+
+      const maxScrollTop = container.scrollHeight - container.clientHeight;
+
+      if (container.scrollTop >= maxScrollTop) {
+        direction = -1; // Reached bottom, reverse direction to go up
+      } else if (container.scrollTop <= 0) {
+        direction = 1; // Reached top, reverse direction to go down
+      }
+
+      animationFrameId = requestAnimationFrame(scrollLoop);
+    };
+
+    const timer = setTimeout(() => {
+      animationFrameId = requestAnimationFrame(scrollLoop);
+    }, 1200);
+
+    return () => {
+      clearTimeout(timer);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
 
   const handleDownload = async () => {
     setDownloading(true);
@@ -53,7 +89,6 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
           <h1 className="text-2xl font-bold tracking-tight capitalize text-gray-900">
             {dbData?.clientName || name}
           </h1>
-
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -79,6 +114,7 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
           )}
         </div>
       </div>
+      
       <div className="flex flex-wrap items-center justify-center gap-4 mt-12 relative z-20">
         {[
           {
@@ -123,6 +159,7 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
           </a>
         ))}
       </div>
+
       {/* Browser Mockup Card Container */}
       <div className="w-full max-w-8xl mx-auto mt-10 flex flex-col bg-white rounded-2xl shadow-2xl border border-gray-300 overflow-hidden ring-1 ring-black/5">
 
@@ -143,40 +180,21 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
             </div>
           </div>
 
-          <div className="w-20" /> {/* Spacer to balance flex-between */}
+          <div className="w-20" />
         </div>
 
-        {/* Live Website Content */}
-        {/* 
-            CRITICAL FIX: `transform translate-x-0 translate-y-0` creates a new containing block. 
-            This forces any `fixed` elements inside (like the Navbar) to attach to THIS DIV, 
-            preventing them from flying out into the rest of the dashboard! 
-        */}
-        <div className="relative w-full h-[750px] overflow-y-auto overflow-x-hidden bg-gray-50 transform translate-x-0 translate-y-0 custom-scrollbar">
-
+        {/* Live Website Content with Auto-Scroll & Locked Touch Controls */}
+        <div 
+          ref={scrollRef}
+          className="relative w-full h-[750px] overflow-hidden bg-gray-50 transform translate-x-0 translate-y-0 select-none"
+          style={{ pointerEvents: 'none' }}
+        >
           <div id="live-preview-box" className="w-full bg-white min-h-full flex flex-col relative origin-top">
             <WebsiteOne data={activeData} />
           </div>
-
         </div>
-      </div>
 
-      <style jsx global>{`
-        /* Nice custom scrollbar for the preview window */
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f1f1f1; 
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #c1c1c1; 
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #a8a8a8; 
-        }
-      `}</style>
+      </div>
     </div>
   );
 }

@@ -11,7 +11,6 @@ export default async function ClientPage({ params }: { params: Promise<{ name: s
     if (!dbData) {
         notFound();
     }
-
     // Pass data to the interactive dashboard
     return <ClientDashboard name={name} dbData={dbData} />;
 }

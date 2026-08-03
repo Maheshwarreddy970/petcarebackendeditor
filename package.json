@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write"
   },
   "dependencies": {
+    "@swc/helpers": "^0.5.23",
     "cloudinary": "^2.10.0",
     "clsx": "^2.1.1",
     "firebase": "^12.16.0",

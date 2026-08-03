@@ -16,7 +16,8 @@ export async function POST(req: Request) {
     processedHtml = processedHtml.replace(/transform:\s*translateY\([0-9a-z%]+\);?/gi, '');
 
     // Matches any url starting with http that points to cloudinary, unsplash, or common image hosts
-    const imageRegex = /https?:\/\/[^"'\s\\)]+\.(?:jpg|jpeg|png|webp|avif|gif|svg)|https?:\/\/(?:res\.cloudinary\.com|images\.unsplash\.com)[^"'\s\\)]+/gi;
+    // 🔥 Added .ico format support to catch Favicon declarations
+    const imageRegex = /https?:\/\/[^"'\s\\)]+\.(?:jpg|jpeg|png|webp|avif|gif|svg|ico)|https?:\/\/(?:res\.cloudinary\.com|images\.unsplash\.com)[^"'\s\\)]+/gi;
     const matches = processedHtml.match(imageRegex) || [];
     
     // De-duplicate URLs
@@ -41,6 +42,7 @@ export async function POST(req: Request) {
         else if (lowerUrl.includes('.webp')) ext = 'webp';
         else if (lowerUrl.includes('.svg')) ext = 'svg';
         else if (lowerUrl.includes('.gif')) ext = 'gif';
+        else if (lowerUrl.includes('.ico')) ext = 'ico';
 
         const filename = `image_${i}.${ext}`;
         assetsFolder?.file(filename, buffer);
