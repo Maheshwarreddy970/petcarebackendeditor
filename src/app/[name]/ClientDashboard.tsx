@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { LayoutTemplate, Code, ExternalLink, Loader2, Globe, Calendar, Server, ShieldCheck, CheckCircle2, Lock, Link as LinkIcon } from "lucide-react";
+import { LayoutTemplate, Code, ExternalLink, Loader2, Globe, Server, ShieldCheck, CheckCircle2, Lock, Link as LinkIcon } from "lucide-react";
 import merge from "lodash/merge";
 import WebsiteOne from "@/components/templates/WebsiteOne";
 import { deployWebsiteAction, connectCustomDomainAction } from "@/actions/tenant";
@@ -24,13 +24,12 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
   const [isDeployed, setIsDeployed] = useState(dbData?.isDeployed || false);
   const [isDeploying, setIsDeploying] = useState(false);
   const [deployStep, setDeployStep] = useState(0);
-
+  
   const [showDnsModal, setShowDnsModal] = useState(false);
   const [customDomainInput, setCustomDomainInput] = useState("");
   const [dnsRecords, setDnsRecords] = useState<any>(null);
   const [isConnecting, setIsConnecting] = useState(false);
 
-  // Read the active custom domain from Firebase, otherwise fallback to subdomain
   const activeDomain = dbData?.customDomain || `${name}.nexpetcare.online`;
   const activeData = merge({}, dbData?.websiteOneData || {});
 
@@ -40,30 +39,28 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
 
     for (let i = 0; i < DEPLOY_STEPS.length; i++) {
       setDeployStep(i);
-      await new Promise(res => setTimeout(res, 800));
+      await new Promise(res => setTimeout(res, 800)); 
     }
 
     const res = await deployWebsiteAction(name);
-
+    
     if (res.success) {
       setIsDeployed(true);
     } else {
       alert("Deployment failed. Have you added your Vercel API keys?");
     }
-
+    
     setIsDeploying(false);
   };
 
   const handleConnectDomain = async () => {
     if (!customDomainInput) return;
     setIsConnecting(true);
-
-    // Call the new action to register in Vercel AND save to Firebase
+    
     const res = await connectCustomDomainAction(name, customDomainInput.toLowerCase());
-
+    
     if (res.success) {
       setDnsRecords(res.dnsRecords);
-      // Reload the page slightly later to refresh the dbData
       setTimeout(() => window.location.reload(), 2000);
     } else {
       alert(`Error connecting domain: ${res.error}`);
@@ -113,8 +110,8 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
             Your website is currently in draft mode. Deploy it to our global edge network to generate your subdomain and view the live preview.
           </p>
 
-          <button
-            onClick={handleDeploy}
+          <button 
+            onClick={handleDeploy} 
             disabled={isDeploying}
             className="flex items-center gap-2 px-8 py-3.5 text-base font-semibold bg-black text-white rounded-xl hover:bg-gray-800 transition-all shadow-md disabled:opacity-80 disabled:cursor-not-allowed"
           >
@@ -128,7 +125,7 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
                 {DEPLOY_STEPS[deployStep]}
               </p>
               <div className="w-64 h-1.5 bg-gray-100 rounded-full mt-3 overflow-hidden">
-                <div
+                <div 
                   className="h-full bg-blue-600 transition-all duration-300"
                   style={{ width: `${((deployStep + 1) / DEPLOY_STEPS.length) * 100}%` }}
                 />
@@ -147,7 +144,7 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
               <h3 className="text-2xl font-bold mb-2">
                 {dbData?.customDomain ? "Custom Domain Connected" : "Connect Your Own Domain (Free)"}
               </h3>
-
+              
               {dbData?.customDomain ? (
                 <p className="text-blue-100/80 mb-6 text-sm max-w-2xl">
                   Your site is officially live at <span className="font-mono bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded border border-green-500/30">{activeDomain}</span>. SSL certificates and Edge CDN routing are fully operational.
@@ -157,9 +154,9 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
                   Your site is currently live at <span className="font-mono bg-black/30 px-1.5 py-0.5 rounded text-white">{activeDomain}</span>. Want to use a custom domain like <span className="font-mono bg-black/30 px-1.5 py-0.5 rounded text-white">www.yourpetsalon.com</span>? Connect it instantly via our secure network.
                 </p>
               )}
-
+              
               <div className="flex flex-wrap gap-4">
-                <button
+                <button 
                   onClick={() => setShowDnsModal(!showDnsModal)}
                   className="bg-white text-black px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-gray-100 transition-colors flex items-center gap-2"
                 >
@@ -174,15 +171,15 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
             <div className="w-full max-w-7xl mx-auto mt-4 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-top-4">
               <h4 className="font-bold text-lg mb-4">Domain Configuration</h4>
               <div className="flex items-center gap-3 mb-6">
-                <input
-                  type="text"
+                <input 
+                  type="text" 
                   placeholder="Enter your domain (e.g. yoursite.com)"
                   value={customDomainInput}
                   onChange={e => setCustomDomainInput(e.target.value)}
                   className="w-full max-w-md border border-gray-300 px-4 py-2 rounded-lg text-sm outline-none focus:border-blue-500"
                 />
-                <button
-                  onClick={handleConnectDomain}
+                <button 
+                  onClick={handleConnectDomain} 
                   disabled={isConnecting || !customDomainInput}
                   className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-70 flex items-center gap-2"
                 >
@@ -211,8 +208,9 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
             </div>
           )}
 
+          {/* Browser Mockup Card Container with Strict Scroll Bounds */}
           <div className="w-full max-w-7xl mx-auto mt-10 flex flex-col bg-white rounded-2xl shadow-2xl border border-gray-300 overflow-hidden ring-1 ring-black/5">
-            <div className="h-14 bg-gray-100/80 border-b border-gray-200 flex items-center px-4 justify-between select-none">
+            <div className="h-14 bg-gray-100/80 border-b border-gray-200 flex items-center px-4 justify-between select-none shrink-0">
               <div className="flex gap-2 w-20">
                 <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]" />
                 <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]" />
@@ -228,13 +226,16 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
               <div className="w-20" />
             </div>
 
-            <div id="live-preview-box" className={`w-full bg-white min-h-full flex flex-col relative origin-top ${!isDeployed ? 'animate-auto-scroll pointer-events-none' : ''}`}>
-              <WebsiteOne data={activeData} />
+            {/* STRICT CONTAINER CONSTRAINTS: h-[750px] overflow-y-auto ensures it never spills out */}
+            <div className="relative w-full h-[750px] overflow-y-auto overflow-x-hidden bg-gray-50 custom-scrollbar">
+              <div id="live-preview-box" className="w-full bg-white min-h-full flex flex-col relative origin-top">
+                <WebsiteOne data={activeData} />
+              </div>
             </div>
           </div>
         </>
       )}
-
+      
       <style jsx global>{`
         .custom-scrollbar::-webkit-scrollbar { width: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
