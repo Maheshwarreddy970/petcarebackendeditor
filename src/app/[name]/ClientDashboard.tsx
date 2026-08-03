@@ -2,86 +2,58 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { LayoutTemplate, Code, ExternalLink, Loader2, Globe, Server, ShieldCheck, CheckCircle2, Lock, Link as LinkIcon } from "lucide-react";
+import { LayoutTemplate, Code, Download, ExternalLink, Loader2, Lock } from "lucide-react";
 import merge from "lodash/merge";
 import WebsiteOne from "@/components/templates/WebsiteOne";
-import { deployWebsiteAction, connectCustomDomainAction } from "@/actions/tenant";
 
 interface DashboardProps {
   name: string;
   dbData: any;
 }
 
-const DEPLOY_STEPS = [
-  "Initializing edge servers...",
-  "Building static assets...",
-  "Optimizing images via Cloudinary...",
-  "Provisioning subdomain...",
-  "Deploying to Vercel Edge Network..."
-];
-
 export default function ClientDashboard({ name, dbData }: DashboardProps) {
-  const [isDeployed, setIsDeployed] = useState(dbData?.isDeployed || false);
-  const [isDeploying, setIsDeploying] = useState(false);
-  const [deployStep, setDeployStep] = useState(0);
-  
-  const [showDnsModal, setShowDnsModal] = useState(false);
-  const [customDomainInput, setCustomDomainInput] = useState("");
-  const [dnsRecords, setDnsRecords] = useState<any>(null);
-  const [isConnecting, setIsConnecting] = useState(false);
-
-  const activeDomain = dbData?.customDomain || `${name}.nexpetcare.online`;
+  const [downloading, setDownloading] = useState(false);
+  const paid = dbData?.paid;
   const activeData = merge({}, dbData?.websiteOneData || {});
 
-  const handleDeploy = async () => {
-    setIsDeploying(true);
-    setDeployStep(0);
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      const previewBox = document.getElementById("live-preview-box");
+      if (!previewBox) throw new Error("Preview not found");
 
-    for (let i = 0; i < DEPLOY_STEPS.length; i++) {
-      setDeployStep(i);
-      await new Promise(res => setTimeout(res, 800)); 
-    }
+      const rawHtml = previewBox.outerHTML;
+      const fullHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${dbData?.clientName || 'Website'}</title><script src="https://unpkg.com/@tailwindcss/browser@4"></script><style>body{margin:0;padding:0;overflow-x:hidden;font-family:sans-serif;}</style></head><body>${rawHtml}</body></html>`;
 
-    const res = await deployWebsiteAction(name);
-    
-    if (res.success) {
-      setIsDeployed(true);
-    } else {
-      alert("Deployment failed. Have you added your Vercel API keys?");
-    }
-    
-    setIsDeploying(false);
-  };
+      const res = await fetch("/api/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullHtml })
+      });
 
-  const handleConnectDomain = async () => {
-    if (!customDomainInput) return;
-    setIsConnecting(true);
-    
-    const res = await connectCustomDomainAction(name, customDomainInput.toLowerCase());
-    
-    if (res.success) {
-      setDnsRecords(res.dnsRecords);
-      setTimeout(() => window.location.reload(), 2000);
-    } else {
-      alert(`Error connecting domain: ${res.error}`);
+      if (!res.ok) throw new Error("Export failed");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${name}-website.zip`;
+      a.click();
+    } catch (error) {
+      alert("Failed to download website ZIP");
     }
-    setIsConnecting(false);
+    setDownloading(false);
   };
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] text-black p-6 md:p-10 font-sans flex flex-col items-center">
 
-      <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+      {/* Dashboard Header */}
+      <div className="w-full max-w-8xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
         <div>
           <h1 className="text-2xl font-bold tracking-tight capitalize text-gray-900">
             {dbData?.clientName || name}
           </h1>
-          <div className="flex items-center gap-2 mt-1">
-            <span className={`w-2 h-2 rounded-full ${isDeployed ? "bg-green-500 animate-pulse" : "bg-gray-300"}`}></span>
-            <p className="text-sm text-gray-500 font-medium">
-              {isDeployed ? "Live on Global Edge Network" : "Draft Mode - Not Deployed"}
-            </p>
-          </div>
+
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -91,156 +63,119 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
           <Link href={`/${name}/edit?tab=json`} className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors shadow-sm">
             <Code size={16} /> Edit JSON
           </Link>
+          <Link href={`/${name}/live`} target="_blank" className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors shadow-sm">
+            <ExternalLink size={16} /> Fullscreen
+          </Link>
 
-          {isDeployed && (
-            <Link href={`https://${activeDomain}`} target="_blank" className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-blue-50 border border-blue-200 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors shadow-sm">
-              <ExternalLink size={16} /> Visit Live Site
-            </Link>
+          {paid ? (
+            <button onClick={handleDownload} disabled={downloading} className="flex items-center gap-2 px-5 py-2 text-sm font-semibold bg-black text-white rounded-lg hover:bg-gray-800 transition-colors shadow-md disabled:opacity-70">
+              {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+              {downloading ? "Packaging..." : "Export ZIP"}
+            </button>
+          ) : (
+            <button disabled className="flex items-center gap-2 px-5 py-2 text-sm font-semibold bg-gray-200 text-gray-500 rounded-lg cursor-not-allowed border border-gray-300">
+              <Lock size={16} /> Export ZIP (Pro)
+            </button>
           )}
         </div>
       </div>
-
-      {!isDeployed ? (
-        <div className="w-full max-w-3xl mx-auto mt-12 bg-white p-12 rounded-2xl shadow-sm border border-gray-200 text-center flex flex-col items-center">
-          <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6">
-            <Server className="w-10 h-10 text-blue-600" />
-          </div>
-          <h2 className="text-2xl font-bold mb-2">Deploy Your Site to Preview</h2>
-          <p className="text-gray-500 mb-8 max-w-md">
-            Your website is currently in draft mode. Deploy it to our global edge network to generate your subdomain and view the live preview.
-          </p>
-
-          <button 
-            onClick={handleDeploy} 
-            disabled={isDeploying}
-            className="flex items-center gap-2 px-8 py-3.5 text-base font-semibold bg-black text-white rounded-xl hover:bg-gray-800 transition-all shadow-md disabled:opacity-80 disabled:cursor-not-allowed"
+      <div className="flex flex-wrap items-center justify-center gap-4 mt-12 relative z-20">
+        {[
+          {
+            name: "Netlify",
+            url: "https://app.netlify.com/",
+            icon: (
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5">
+                <path d="M5.926 24L11.583 13.064L8.136 9.47L0 17.511L5.926 24Z" fill="#00C7B7" />
+                <path d="M22.062 5.093L13.123 9.47L17.842 14.512L22.062 5.093Z" fill="#4D9CB9" />
+                <path d="M12.441 9.47L12.446 0L24.004 5.093L12.441 24V9.47Z" fill="#305869" />
+              </svg>
+            )
+          },
+          {
+            name: "Vercel",
+            url: "https://vercel.com/",
+            icon: (
+              <svg viewBox="0 0 76 65" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-black">
+                <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" fill="currentColor" />
+              </svg>
+            )
+          },
+          {
+            name: "Cloudflare",
+            url: "https://www.cloudflare.com/drop/",
+            icon: (
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-[#F38020]">
+                <path d="M17.5 10c-.3 0-.7.03-1 .08C15.7 7.7 13.5 6 11 6c-3 0-5.5 2.2-5.9 5.1C3.3 11.5 2 13.1 2 15c0 2.2 1.8 4 4 4h11.5c2.5 0 4.5-2 4.5-4.5S20 10 17.5 10z" fill="currentColor" />
+              </svg>
+            )
+          }
+        ].map((platform, index) => (
+          <a
+            key={index}
+            href={platform.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-5 py-2.5 bg-white text-gray-800 font-medium rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200"
           >
-            {isDeploying ? <Loader2 size={18} className="animate-spin" /> : <Globe size={18} />}
-            {isDeploying ? "Deploying..." : "Deploy Website"}
-          </button>
+            {platform.icon}
+            {platform.name}
+          </a>
+        ))}
+      </div>
+      {/* Browser Mockup Card Container */}
+      <div className="w-full max-w-8xl mx-auto mt-10 flex flex-col bg-white rounded-2xl shadow-2xl border border-gray-300 overflow-hidden ring-1 ring-black/5">
 
-          {isDeploying && (
-            <div className="mt-6 flex flex-col items-center">
-              <p className="text-sm font-medium text-blue-600 animate-pulse">
-                {DEPLOY_STEPS[deployStep]}
-              </p>
-              <div className="w-64 h-1.5 bg-gray-100 rounded-full mt-3 overflow-hidden">
-                <div 
-                  className="h-full bg-blue-600 transition-all duration-300"
-                  style={{ width: `${((deployStep + 1) / DEPLOY_STEPS.length) * 100}%` }}
-                />
-              </div>
+        {/* Safari/Chrome Fake Header Bar */}
+        <div className="h-14 bg-gray-100/80 border-b border-gray-200 flex items-center px-4 justify-between select-none">
+          {/* Traffic Lights */}
+          <div className="flex gap-2 w-20">
+            <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]" />
+            <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]" />
+            <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]" />
+          </div>
+
+          {/* Fake Address Bar */}
+          <div className="flex-1 flex justify-center">
+            <div className="bg-white px-8 py-1.5 text-xs text-gray-500 font-medium rounded-md border border-gray-200 shadow-sm flex items-center gap-2 min-w-[250px] justify-center">
+              <Lock size={12} className="text-gray-400" />
+              {dbData?.clientName || name}.petocare.com
             </div>
-          )}
+          </div>
+
+          <div className="w-20" /> {/* Spacer to balance flex-between */}
         </div>
-      ) : (
-        <>
-          <div className="w-full max-w-7xl mx-auto mt-8 bg-gradient-to-r from-blue-900 to-slate-900 rounded-2xl p-8 text-white flex flex-col md:flex-row items-center justify-between shadow-lg">
-            <div className="flex-1 pr-8">
-              <div className="flex items-center gap-2 text-blue-300 mb-2">
-                <ShieldCheck size={18} />
-                <span className="text-sm font-bold uppercase tracking-wider">Vercel Domain Network</span>
-              </div>
-              <h3 className="text-2xl font-bold mb-2">
-                {dbData?.customDomain ? "Custom Domain Connected" : "Connect Your Own Domain (Free)"}
-              </h3>
-              
-              {dbData?.customDomain ? (
-                <p className="text-blue-100/80 mb-6 text-sm max-w-2xl">
-                  Your site is officially live at <span className="font-mono bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded border border-green-500/30">{activeDomain}</span>. SSL certificates and Edge CDN routing are fully operational.
-                </p>
-              ) : (
-                <p className="text-blue-100/80 mb-6 text-sm max-w-2xl">
-                  Your site is currently live at <span className="font-mono bg-black/30 px-1.5 py-0.5 rounded text-white">{activeDomain}</span>. Want to use a custom domain like <span className="font-mono bg-black/30 px-1.5 py-0.5 rounded text-white">www.yourpetsalon.com</span>? Connect it instantly via our secure network.
-                </p>
-              )}
-              
-              <div className="flex flex-wrap gap-4">
-                <button 
-                  onClick={() => setShowDnsModal(!showDnsModal)}
-                  className="bg-white text-black px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-gray-100 transition-colors flex items-center gap-2"
-                >
-                  <LinkIcon size={16} />
-                  {dbData?.customDomain ? "Manage DNS Records" : "Setup DNS Records"}
-                </button>
-              </div>
-            </div>
+
+        {/* Live Website Content */}
+        {/* 
+            CRITICAL FIX: `transform translate-x-0 translate-y-0` creates a new containing block. 
+            This forces any `fixed` elements inside (like the Navbar) to attach to THIS DIV, 
+            preventing them from flying out into the rest of the dashboard! 
+        */}
+        <div className="relative w-full h-[750px] overflow-y-auto overflow-x-hidden bg-gray-50 transform translate-x-0 translate-y-0 custom-scrollbar">
+
+          <div id="live-preview-box" className="w-full bg-white min-h-full flex flex-col relative origin-top">
+            <WebsiteOne data={activeData} />
           </div>
 
-          {showDnsModal && (
-            <div className="w-full max-w-7xl mx-auto mt-4 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-top-4">
-              <h4 className="font-bold text-lg mb-4">Domain Configuration</h4>
-              <div className="flex items-center gap-3 mb-6">
-                <input 
-                  type="text" 
-                  placeholder="Enter your domain (e.g. yoursite.com)"
-                  value={customDomainInput}
-                  onChange={e => setCustomDomainInput(e.target.value)}
-                  className="w-full max-w-md border border-gray-300 px-4 py-2 rounded-lg text-sm outline-none focus:border-blue-500"
-                />
-                <button 
-                  onClick={handleConnectDomain} 
-                  disabled={isConnecting || !customDomainInput}
-                  className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-70 flex items-center gap-2"
-                >
-                  {isConnecting ? <Loader2 size={16} className="animate-spin" /> : null}
-                  Generate DNS
-                </button>
-              </div>
+        </div>
+      </div>
 
-              {dnsRecords && (
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <p className="text-sm text-gray-600 mb-3">Add these records to your domain registrar (GoDaddy, Namecheap, Route53, etc.)</p>
-                  <div className="flex flex-col gap-2">
-                    {dnsRecords.map((record: any, idx: number) => (
-                      <div key={idx} className="grid grid-cols-4 gap-4 bg-white p-3 rounded border border-gray-200 text-sm font-mono text-gray-700">
-                        <div><span className="text-xs text-gray-400 block mb-1">Type</span>{record.type}</div>
-                        <div><span className="text-xs text-gray-400 block mb-1">Name</span>{record.name}</div>
-                        <div className="col-span-2"><span className="text-xs text-gray-400 block mb-1">Target / Value</span>{record.value}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-4 flex items-center gap-2 text-sm text-green-600 font-medium">
-                    <CheckCircle2 size={16} /> SSL Certificate will be automatically provisioned by Vercel.
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Browser Mockup Card Container with Strict Scroll Bounds */}
-          <div className="w-full max-w-7xl mx-auto mt-10 flex flex-col bg-white rounded-2xl shadow-2xl border border-gray-300 overflow-hidden ring-1 ring-black/5">
-            <div className="h-14 bg-gray-100/80 border-b border-gray-200 flex items-center px-4 justify-between select-none shrink-0">
-              <div className="flex gap-2 w-20">
-                <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]" />
-                <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]" />
-                <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]" />
-              </div>
-
-              <div className="flex-1 flex justify-center">
-                <div className="bg-white px-8 py-1.5 text-xs text-gray-500 font-medium rounded-md border border-gray-200 shadow-sm flex items-center gap-2 min-w-[250px] justify-center">
-                  <Lock size={12} className={dbData?.customDomain ? "text-green-500" : "text-gray-400"} />
-                  {activeDomain}
-                </div>
-              </div>
-              <div className="w-20" />
-            </div>
-
-            {/* STRICT CONTAINER CONSTRAINTS: h-[750px] overflow-y-auto ensures it never spills out */}
-            <div className="relative w-full h-[750px] overflow-y-auto overflow-x-hidden bg-gray-50 custom-scrollbar">
-              <div id="live-preview-box" className="w-full bg-white min-h-full flex flex-col relative origin-top">
-                <WebsiteOne data={activeData} />
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-      
       <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+        /* Nice custom scrollbar for the preview window */
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #c1c1c1; 
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #a8a8a8; 
+        }
       `}</style>
     </div>
   );
