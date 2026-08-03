@@ -70,7 +70,7 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
     <div className="min-h-screen bg-[#f8f9fa] text-black p-6 md:p-10 font-sans flex flex-col items-center">
 
       {/* Dashboard Header */}
-      <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+      <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-200 z-10 relative">
         <div>
           <h1 className="text-2xl font-bold tracking-tight capitalize text-gray-900">
             {dbData?.clientName || name}
@@ -99,45 +99,10 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
         </div>
       </div>
 
-      {/* IF NOT DEPLOYED: Show Deployment Card */}
-      {!isDeployed ? (
-        <div className="w-full max-w-3xl mx-auto mt-12 bg-white p-12 rounded-2xl shadow-sm border border-gray-200 text-center flex flex-col items-center">
-          <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6">
-            <Server className="w-10 h-10 text-blue-600" />
-          </div>
-          <h2 className="text-2xl font-bold mb-2">Deploy Your Site to Preview</h2>
-          <p className="text-gray-500 mb-8 max-w-md">
-            Your website is currently in draft mode. Deploy it to our global edge network to generate your subdomain and view the live preview.
-          </p>
-
-          <button 
-            onClick={handleDeploy} 
-            disabled={isDeploying}
-            className="flex items-center gap-2 px-8 py-3.5 text-base font-semibold bg-black text-white rounded-xl hover:bg-gray-800 transition-all shadow-md disabled:opacity-80 disabled:cursor-not-allowed"
-          >
-            {isDeploying ? <Loader2 size={18} className="animate-spin" /> : <Globe size={18} />}
-            {isDeploying ? "Deploying..." : "Deploy Website"}
-          </button>
-
-          {isDeploying && (
-            <div className="mt-6 flex flex-col items-center">
-              <p className="text-sm font-medium text-blue-600 animate-pulse">
-                {DEPLOY_STEPS[deployStep]}
-              </p>
-              <div className="w-64 h-1.5 bg-gray-100 rounded-full mt-3 overflow-hidden">
-                <div 
-                  className="h-full bg-blue-600 transition-all duration-300"
-                  style={{ width: `${((deployStep + 1) / DEPLOY_STEPS.length) * 100}%` }}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-      ) : (
-        // IF DEPLOYED: Show Domain Connection and Preview
+      {/* IF DEPLOYED: Show Domain Connection Panel at top */}
+      {isDeployed && (
         <>
-          {/* Custom Domain Setup Card */}
-          <div className="w-full max-w-7xl mx-auto mt-8 bg-gradient-to-r from-blue-900 to-slate-900 rounded-2xl p-8 text-white flex flex-col md:flex-row items-center justify-between shadow-lg">
+          <div className="w-full max-w-7xl mx-auto mt-8 bg-gradient-to-r from-blue-900 to-slate-900 rounded-2xl p-8 text-white flex flex-col md:flex-row items-center justify-between shadow-lg z-10 relative">
             <div className="flex-1 pr-8">
               <div className="flex items-center gap-2 text-blue-300 mb-2">
                 <ShieldCheck size={18} />
@@ -161,15 +126,15 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
                   target="_blank"
                   className="bg-blue-600/30 border border-blue-400/30 text-white px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-blue-600/50 transition-colors flex items-center gap-2"
                 >
-                  <Calendar size={16} /> Need help? Book a free setup call
+                  <Calendar size={16} /> Need help? Book a setup call
                 </a>
               </div>
             </div>
           </div>
 
-          {/* DNS Settings Panel (Expands when button is clicked) */}
+          {/* DNS Settings Panel */}
           {showDnsModal && (
-            <div className="w-full max-w-7xl mx-auto mt-4 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <div className="w-full max-w-7xl mx-auto mt-4 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm z-10 relative">
               <h4 className="font-bold text-lg mb-4">Domain Configuration</h4>
               <div className="flex items-center gap-3 mb-6">
                 <input 
@@ -208,41 +173,94 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
               )}
             </div>
           )}
-
-          {/* Browser Mockup Card Container */}
-          <div className="w-full max-w-7xl mx-auto mt-10 flex flex-col bg-white rounded-2xl shadow-2xl border border-gray-300 overflow-hidden ring-1 ring-black/5">
-            {/* Safari/Chrome Fake Header Bar */}
-            <div className="h-14 bg-gray-100/80 border-b border-gray-200 flex items-center px-4 justify-between select-none">
-              <div className="flex gap-2 w-20">
-                <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]" />
-                <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]" />
-                <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]" />
-              </div>
-
-              <div className="flex-1 flex justify-center">
-                <div className="bg-white px-8 py-1.5 text-xs text-gray-500 font-medium rounded-md border border-gray-200 shadow-sm flex items-center gap-2 min-w-[250px] justify-center">
-                  <Lock size={12} className="text-gray-400" />
-                  {name}.nexpetcare.online
-                </div>
-              </div>
-              <div className="w-20" />
-            </div>
-
-            {/* Live Website Content */}
-            <div className="relative w-full h-[750px] overflow-y-auto overflow-x-hidden bg-gray-50 transform translate-x-0 translate-y-0 custom-scrollbar">
-              <div id="live-preview-box" className="w-full bg-white min-h-full flex flex-col relative origin-top">
-                <WebsiteOne data={activeData} />
-              </div>
-            </div>
-          </div>
         </>
       )}
 
+      {/* Browser Mockup Card Container - Always Rendered */}
+      <div className="w-full max-w-7xl mx-auto mt-10 flex flex-col bg-white rounded-2xl shadow-2xl border border-gray-300 overflow-hidden ring-1 ring-black/5 z-0">
+        
+        {/* Safari/Chrome Fake Header Bar */}
+        <div className="h-14 bg-gray-100/80 border-b border-gray-200 flex items-center px-4 justify-between select-none z-10 relative">
+          <div className="flex gap-2 w-20">
+            <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]" />
+            <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]" />
+            <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]" />
+          </div>
+
+          <div className="flex-1 flex justify-center">
+            <div className="bg-white px-8 py-1.5 text-xs text-gray-500 font-medium rounded-md border border-gray-200 shadow-sm flex items-center gap-2 min-w-[250px] justify-center">
+              <Lock size={12} className="text-gray-400" />
+              {name}.nexpetcare.online
+            </div>
+          </div>
+          <div className="w-20" />
+        </div>
+
+        {/* Live Website Content Container */}
+        <div className={`relative w-full h-[750px] bg-gray-50 transform translate-x-0 translate-y-0 ${isDeployed ? 'overflow-y-auto custom-scrollbar' : 'overflow-hidden'}`}>
+          
+          {/* 🔥 OVERLAY: If NOT deployed, show the Glass Modal on top of the scrolling site 🔥 */}
+          {!isDeployed && (
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/40 backdrop-blur-md">
+              <div className="w-full max-w-lg mx-auto bg-white/95 p-12 rounded-3xl shadow-2xl border border-white text-center flex flex-col items-center ring-1 ring-black/5">
+                <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                  <Server className="w-10 h-10 text-blue-600" />
+                </div>
+                <h2 className="text-2xl font-bold mb-2">Deploy to Preview</h2>
+                <p className="text-gray-500 mb-8 leading-relaxed">
+                  Your website is ready. Deploy it to our edge network to generate your live URL and connect custom domains.
+                </p>
+
+                <button 
+                  onClick={handleDeploy} 
+                  disabled={isDeploying}
+                  className="flex items-center gap-2 px-8 py-4 text-base font-semibold bg-black text-white rounded-xl hover:bg-gray-800 transition-all shadow-lg disabled:opacity-80 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
+                >
+                  {isDeploying ? <Loader2 size={18} className="animate-spin" /> : <Globe size={18} />}
+                  {isDeploying ? "Deploying..." : "Deploy Website"}
+                </button>
+
+                {isDeploying && (
+                  <div className="mt-6 w-full flex flex-col items-center">
+                    <p className="text-sm font-medium text-blue-600 animate-pulse mb-3">
+                      {DEPLOY_STEPS[deployStep]}
+                    </p>
+                    <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-blue-600 transition-all duration-300"
+                        style={{ width: `${((deployStep + 1) / DEPLOY_STEPS.length) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* The Website - Has 'animate-auto-scroll' if not deployed */}
+          <div id="live-preview-box" className={`w-full bg-white min-h-full flex flex-col relative origin-top ${!isDeployed ? 'animate-auto-scroll opacity-60 pointer-events-none' : ''}`}>
+            <WebsiteOne data={activeData} />
+          </div>
+
+        </div>
+      </div>
+
       <style jsx global>{`
+        /* Custom scrollbar */
         .custom-scrollbar::-webkit-scrollbar { width: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+        
+        /* Auto Scroll Animation for the background preview */
+        @keyframes autoScroll {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-40%); }
+            100% { transform: translateY(0); }
+        }
+        .animate-auto-scroll {
+            animation: autoScroll 45s ease-in-out infinite;
+        }
       `}</style>
     </div>
   );
