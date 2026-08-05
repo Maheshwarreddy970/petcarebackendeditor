@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { LayoutTemplate, Code, ExternalLink, Loader2, Globe, Calendar, Server, ShieldCheck, CheckCircle2, Lock, Link as LinkIcon, RefreshCw, Copy } from "lucide-react";
+import { LayoutTemplate, Code, ExternalLink, Loader2, Globe, Calendar, Server, ShieldCheck, CheckCircle2, Lock, Link as LinkIcon, RefreshCw, Copy, Download } from "lucide-react";
 import merge from "lodash/merge";
 import WebsiteOne from "@/components/templates/WebsiteOne";
 import { deployWebsiteAction, connectCustomDomainAction, checkDomainStatusAction } from "@/actions/tenant";
@@ -21,6 +21,9 @@ const DEPLOY_STEPS = [
 ];
 
 export default function ClientDashboard({ name, dbData }: DashboardProps) {
+
+  const paid = dbData?.paid;
+  const [downloading, setDownloading] = useState(false);
   const [isDeployed, setIsDeployed] = useState(dbData?.isDeployed || false);
   const [isDeploying, setIsDeploying] = useState(false);
   const [deployStep, setDeployStep] = useState(0);
@@ -138,6 +141,8 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
     document.execCommand("copy");
     document.body.removeChild(tempInput);
   }
+  const handleDownload = async () => {
+  };
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] text-black p-6 md:p-10 font-sans flex flex-col items-center">
@@ -163,6 +168,16 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
           <Link className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors shadow-sm" href={`/${name}/edit?tab=json`}>
             <Code size={16} /> Edit JSON
           </Link>
+          {paid ? (
+            <button onClick={handleDownload} disabled={downloading} className="flex items-center gap-2 px-5 py-2 text-sm font-semibold bg-black text-white rounded-lg hover:bg-gray-800 transition-colors shadow-md disabled:opacity-70">
+              {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+              {downloading ? "Packaging..." : "Export ZIP"}
+            </button>
+          ) : (
+            <button disabled className="flex items-center gap-2 px-5 py-2 text-sm font-semibold bg-gray-200 text-gray-500 rounded-lg cursor-not-allowed border border-gray-300">
+              <Lock size={16} /> Export ZIP (Pro)
+            </button>
+          )}
 
           {isDeployed && (
             <a href={liveHref} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-blue-50 border border-blue-200 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors shadow-sm">
@@ -335,16 +350,16 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
         </div>
 
         {/* Outer wrapper to catch mouse hover */}
-        <div 
+        <div
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
-          className="relative w-full h-[750px] bg-gray-50 overflow-hidden" 
+          className="relative w-full h-[750px] bg-gray-50 overflow-hidden"
         >
           {/* Inner scrolling container (overflow-hidden prevents manual scroll, contain-paint traps the fixed navbar) */}
-          <div 
+          <div
             ref={scrollRef}
             className="absolute inset-0 overflow-hidden"
-            style={{ contain: 'paint' }} 
+            style={{ contain: 'paint' }}
           >
             {/* pointer-events-none completely blocks clicking and manual dragging */}
             <div className="w-full min-h-full bg-white flex flex-col relative pointer-events-none">
