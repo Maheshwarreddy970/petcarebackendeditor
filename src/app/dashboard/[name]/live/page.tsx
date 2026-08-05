@@ -11,4 +11,4 @@ export default async function LivePage({ params }: { params: Promise<{ name: str
   }
 
   return <WebsiteOne data={dbData.websiteOneData} />;
-}
+}  
