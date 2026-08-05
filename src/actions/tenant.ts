@@ -3,78 +3,109 @@
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-// Helper function to talk to Vercel API
-async function callVercelApi(domain: string) {
-  const projectId = process.env.VERCEL_PROJECT_ID; 
-  const token = process.env.VERCEL_API_TOKEN; 
-  const teamId = process.env.VERCEL_TEAM_ID; 
-
-  if (!projectId || !token) {
-    console.warn("Vercel API keys missing. Skipping automated domain registration.");
-    return true; // Mock success if keys aren't added yet so local dev doesn't break
-  }
-
-  let url = `https://api.vercel.com/v10/projects/${projectId}/domains`;
-  if (teamId) url += `?teamId=${teamId}`;
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ name: domain }),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok && data.error?.code !== "domain_already_in_use") {
-    throw new Error(data.error?.message || "Failed to add domain to Vercel.");
-  }
-
-  return true;
-}
-
-// 1. Deploy action (Provisions the sub-domain e.g., pettowngrooming.nexpetcare.online)
 export async function deployWebsiteAction(slug: string) {
   try {
-    const subdomain = `${slug}.nexpetcare.online`;
-    await callVercelApi(subdomain);
-
     const websiteRef = doc(db, "websites", slug);
     await updateDoc(websiteRef, {
       isDeployed: true,
       lastDeployed: new Date().toISOString()
     });
-
     return { success: true };
   } catch (error: any) {
-    console.error("Deploy Error:", error.message);
     return { success: false, error: error.message };
   }
 }
 
-// 2. Custom Domain action (Provisions custom domains e.g., www.yourpetsalon.com)
 export async function connectCustomDomainAction(slug: string, customDomain: string) {
   try {
-    const cleanDomain = customDomain.replace(/^https?:\/\//, "").replace(/\/$/, "");
-    await callVercelApi(cleanDomain);
+    const cleanDomain = customDomain.replace(/^https?:\/\//, "").replace(/\/$/, "").toLowerCase();
+    
+    // Reading securely from the server (no NEXT_PUBLIC)
+    const zoneId = process.env.CLOUDFLARE_ZONE_ID;
+    const token = process.env.CLOUDFLARE_API_TOKEN;
+    const email = process.env.CLOUDFLARE_EMAIL; 
+    const fallbackDomain = process.env.NEXT_PUBLIC_FALLBACK_DOMAIN || "cname.nexpetcare.online";
+
+    if (!zoneId || !token || !email) {
+      return { success: false, error: "Missing Cloudflare Credentials in .env.local" };
+    }
+
+    // 🔥 HARDCODED TO MATCH THE WORKING TEST SCRIPT
+    const headers: any = { 
+      "Content-Type": "application/json",
+      "X-Auth-Email": email.trim(),
+      "X-Auth-Key": token.trim()
+    };
+
+    const response = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId.trim()}/custom_hostnames`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        hostname: cleanDomain,
+        ssl: { method: "txt", type: "dv" }
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("RAW CLOUDFLARE ERROR:", JSON.stringify(data, null, 2));
+      throw new Error(data.errors?.[0]?.message || "Cloudflare API Failed");
+    }
 
     const websiteRef = doc(db, "websites", slug);
     await updateDoc(websiteRef, {
       customDomain: cleanDomain,
+      cloudflareId: data.result.id,
+      domainStatus: "pending",
       lastUpdated: new Date().toISOString()
     });
 
-    return {
-      success: true,
-      dnsRecords: [
-        { type: "CNAME", name: "@", value: "4e69a923b9f27034.vercel-dns-017.com" },
-        { type: "CNAME", name: "www", value: "4e69a923b9f27034.vercel-dns-017.com" }
-      ]
-    };
+    const ownershipTxt = data.result.ownership_verification;
+    const sslTxt = data.result.ssl?.validation_records?.[0];
+
+    const dnsRecords = [{ type: "CNAME", name: "@", value: fallbackDomain }];
+    if (ownershipTxt) dnsRecords.push({ type: "TXT", name: ownershipTxt.name, value: ownershipTxt.value });
+    if (sslTxt) dnsRecords.push({ type: "TXT", name: sslTxt.txt_name, value: sslTxt.txt_value });
+
+    return { success: true, dnsRecords };
   } catch (error: any) {
-    console.error("Custom Domain Error:", error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function checkDomainStatusAction(slug: string, customDomain: string) {
+  try {
+    const zoneId = process.env.CLOUDFLARE_ZONE_ID;
+    const token = process.env.CLOUDFLARE_API_TOKEN;
+    const email = process.env.CLOUDFLARE_EMAIL;
+
+    if (!zoneId || !token || !email) return { success: false, error: "Missing Credentials" };
+
+    // 🔥 HARDCODED TO MATCH THE WORKING TEST SCRIPT
+    const headers: any = { 
+      "Content-Type": "application/json",
+      "X-Auth-Email": email.trim(),
+      "X-Auth-Key": token.trim()
+    };
+
+    const response = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId.trim()}/custom_hostnames?hostname=${customDomain}`, {
+      method: "GET",
+      headers,
+    });
+
+    const data = await response.json();
+    const domainData = data.result?.[0];
+
+    if (!domainData) throw new Error("Domain not found");
+
+    if (domainData.status === "active") {
+      const websiteRef = doc(db, "websites", slug);
+      await updateDoc(websiteRef, { domainStatus: "active" });
+    }
+
+    return { success: true, status: domainData.status };
+  } catch (error: any) {
     return { success: false, error: error.message };
   }
 }
