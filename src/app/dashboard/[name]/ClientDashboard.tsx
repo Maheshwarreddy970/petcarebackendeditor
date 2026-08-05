@@ -162,10 +162,10 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <Link className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-colors shadow-sm" href={`/${name}/edit?tab=visual`}>
+          <Link className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-colors shadow-sm" href={`/dashboard/${name}/edit?tab=visual`}>
             <LayoutTemplate size={16} /> Edit Visual
           </Link>
-          <Link className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors shadow-sm" href={`/${name}/edit?tab=json`}>
+          <Link className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors shadow-sm" href={`/dashboard/${name}/edit?tab=json`}>
             <Code size={16} /> Edit JSON
           </Link>
           {paid ? (
