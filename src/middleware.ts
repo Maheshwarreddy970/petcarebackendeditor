@@ -1,4 +1,3 @@
-// middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -10,7 +9,9 @@ export const config = {
 
 export default function middleware(req: NextRequest) {
   const url = req.nextUrl;
-  let hostname = req.headers.get("host") || "";
+  
+  // 🚨 NEW: Read the custom header from our Cloudflare Worker first!
+  let hostname = req.headers.get("X-Subdomain-Host") || req.headers.get("host") || "";
   hostname = hostname.replace("www.", ""); 
 
   const mainDomains = ["localhost:3000", "nexpetcare.online"];
@@ -18,8 +19,6 @@ export default function middleware(req: NextRequest) {
   // 1. Map subdomains: dogvanaokotoks.nexpetcare.online -> /[slug]
   if (hostname.endsWith('.nexpetcare.online') && hostname !== 'nexpetcare.online') {
     const subdomain = hostname.replace('.nexpetcare.online', '');
-    
-    // Redirects the background traffic transparently to your /app/[slug] route folder
     return NextResponse.rewrite(new URL(`/${subdomain}${url.pathname}`, req.url));
   }
 
