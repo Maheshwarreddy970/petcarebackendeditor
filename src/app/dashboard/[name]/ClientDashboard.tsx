@@ -55,7 +55,6 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
     return () => cancelAnimationFrame(animationFrameId);
   }, [isHovering]);
 
-  // Display URL defaults to subdomain: dogvanaokotoks.nexpetcare.online
   const activeDisplayUrl = dbData?.customDomain
     ? dbData.customDomain
     : `${name}.nexpetcare.online`;
@@ -319,7 +318,7 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
 
       {/* Auto-scrolling Template Preview - ALWAYS VISIBLE */}
       <div className="w-full max-w-7xl mx-auto mt-10 flex flex-col bg-white rounded-2xl shadow-2xl border border-gray-300 overflow-hidden ring-1 ring-black/5">
-        <div className="h-14 bg-gray-100/80 border-b border-gray-200 flex items-center px-4 justify-between select-none shrink-0 z-10">
+        <div className="h-14 bg-gray-100/80 border-b border-gray-200 flex items-center px-4 justify-between select-none shrink-0 z-10 relative">
           <div className="flex gap-2 w-20">
             <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]" />
             <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]" />
@@ -335,25 +334,25 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
           <div className="w-20" />
         </div>
 
-        {/* Scroll Container */}
-        <div
-          ref={scrollRef}
+        {/* Outer wrapper to catch mouse hover */}
+        <div 
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
-          className="relative w-full h-[750px] overflow-y-auto overflow-x-hidden bg-gray-50 custom-scrollbar scroll-smooth"
+          className="relative w-full h-[750px] bg-gray-50 overflow-hidden" 
         >
-          <div className="w-full bg-white min-h-full flex flex-col relative origin-top">
-            <WebsiteOne data={activeData} />
+          {/* Inner scrolling container (overflow-hidden prevents manual scroll, contain-paint traps the fixed navbar) */}
+          <div 
+            ref={scrollRef}
+            className="absolute inset-0 overflow-hidden"
+            style={{ contain: 'paint' }} 
+          >
+            {/* pointer-events-none completely blocks clicking and manual dragging */}
+            <div className="w-full min-h-full bg-white flex flex-col relative pointer-events-none">
+              <WebsiteOne data={activeData} />
+            </div>
           </div>
         </div>
       </div>
-
-      <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
-      `}</style>
     </div>
   );
 }
