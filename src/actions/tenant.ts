@@ -109,3 +109,17 @@ export async function checkDomainStatusAction(slug: string, customDomain: string
     return { success: false, error: error.message };
   }
 }
+
+export async function saveWebsiteSettingsAction(slug: string, settings: any) {
+  try {
+    const websiteRef = doc(db, "websites", slug);
+    await updateDoc(websiteRef, {
+      settings,
+      lastUpdated: new Date().toISOString()
+    });
+    return { success: true };
+  } catch (error: any) {
+    console.error("Save Settings Error:", error);
+    return { success: false, error: error.message };
+  }
+}

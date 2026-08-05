@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { LayoutTemplate, Code, ExternalLink, Loader2, Globe, Calendar, Server, ShieldCheck, CheckCircle2, Lock, Link as LinkIcon, RefreshCw, Copy, Download } from "lucide-react";
+import { LayoutTemplate, Code, ExternalLink, Loader2, Globe, Calendar, Server, ShieldCheck, CheckCircle2, Lock, Link as LinkIcon, RefreshCw, Copy, Download, Settings } from "lucide-react";
 import merge from "lodash/merge";
 import WebsiteOne from "@/components/templates/WebsiteOne";
 import { deployWebsiteAction, connectCustomDomainAction, checkDomainStatusAction } from "@/actions/tenant";
@@ -21,7 +21,6 @@ const DEPLOY_STEPS = [
 ];
 
 export default function ClientDashboard({ name, dbData }: DashboardProps) {
-
   const paid = dbData?.paid;
   const [downloading, setDownloading] = useState(false);
   const [isDeployed, setIsDeployed] = useState(dbData?.isDeployed || false);
@@ -141,7 +140,88 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
     document.execCommand("copy");
     document.body.removeChild(tempInput);
   }
+
+  // 🚀 SMART ZIP EXPORT: Injects SEO, Analytics, and Integrations into the final HTML!
   const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      const settings = dbData?.settings || {};
+
+      // Grab the raw HTML from our preview wrapper
+      const contentNode = document.getElementById("export-container");
+      const contentHtml = contentNode ? contentNode.innerHTML : "";
+
+      // Build the standard HTML5 boilerplate and inject all dynamic settings
+      const fullHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Metadata -->
+  <title>${settings.seoTitle || dbData?.clientName || name}</title>
+  <meta name="description" content="${settings.seoDescription || ""}">
+  <meta name="keywords" content="${settings.keywords || ""}">
+  ${settings.favicon ? `<link rel="icon" href="${settings.favicon}">` : ""}
+  
+  <!-- Social Media Branding -->
+  <meta property="og:title" content="${settings.seoTitle || name}">
+  <meta property="og:description" content="${settings.seoDescription || ""}">
+  ${settings.ogImage ? `<meta property="og:image" content="${settings.ogImage}">` : ""}
+  
+  <!-- Tailwind CSS (Required for styling the static export) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Analytics -->
+  ${settings.googleAnalyticsId ? `
+  <script async src="https://www.googletagmanager.com/gtag/js?id=${settings.googleAnalyticsId}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '${settings.googleAnalyticsId}');
+  </script>
+  ` : ""}
+
+  <!-- Google Reviews Script -->
+  ${settings.googleReviewsId ? `<script src="https://apps.elfsight.com/p/platform.js" defer></script>` : ""}
+</head>
+<body>
+  
+  <!-- Website Content -->
+  ${contentHtml}
+
+  <!-- Google Reviews Widget Container -->
+  ${settings.googleReviewsId ? `<div class="elfsight-app-${settings.googleReviewsId}"></div>` : ""}
+
+</body>
+</html>`;
+
+      // Send to the backend route to process assets and generate ZIP
+      // Replace "/api/export" with your actual route name if it differs!
+      const res = await fetch("/api/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullHtml })
+      });
+
+      if (!res.ok) throw new Error("Failed to generate ZIP");
+
+      // Trigger the browser to download the blob
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${name}-website.zip`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+    } catch (error) {
+      console.error(error);
+      alert("Failed to export ZIP.");
+    }
+    setDownloading(false);
   };
 
   return (
@@ -167,6 +247,11 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
           </Link>
           <Link className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors shadow-sm" href={`/dashboard/${name}/edit?tab=json`}>
             <Code size={16} /> Edit JSON
+          </Link>
+
+          {/* 🚀 NEW SETTINGS BUTTON */}
+          <Link className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors shadow-sm" href={`/dashboard/${name}/settings`}>
+            <Settings size={16} /> Settings
           </Link>
           {paid ? (
             <button onClick={handleDownload} disabled={downloading} className="flex items-center gap-2 px-5 py-2 text-sm font-semibold bg-black text-white rounded-lg hover:bg-gray-800 transition-colors shadow-md disabled:opacity-70">
@@ -362,7 +447,7 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
             style={{ contain: 'paint' }}
           >
             {/* pointer-events-none completely blocks clicking and manual dragging */}
-            <div className="w-full min-h-full bg-white flex flex-col relative pointer-events-none">
+            <div id="export-container" className="w-full min-h-full bg-white flex flex-col relative pointer-events-none">
               <WebsiteOne data={activeData} />
             </div>
           </div>
