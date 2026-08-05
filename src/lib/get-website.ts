@@ -3,9 +3,13 @@ import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { unstable_cache } from "next/cache";
 
-// Wrap the Firebase call in unstable_cache to cache it globally
 export const getWebsiteData = unstable_cache(
   async (slug: string) => {
+    // 🚨 Safeguard: Prevent sending undefined/null to Firebase where()
+    if (!slug || typeof slug !== "string") {
+      return null;
+    }
+
     try {
       const q = query(collection(db, "websites"), where("slug", "==", slug));
       const snapshot = await getDocs(q);
@@ -17,9 +21,9 @@ export const getWebsiteData = unstable_cache(
       return null;
     }
   },
-  ['website-data'], // Cache key prefix
-  { 
-    revalidate: 3600, // Revalidate background cache every 60 minutes
-    tags: ['website'] // Allows for on-demand revalidation
+  ["website-data"],
+  {
+    revalidate: 3600, // Cache for 1 hour at the Edge
+    tags: ["website"],
   }
 );

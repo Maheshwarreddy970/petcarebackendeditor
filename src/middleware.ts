@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+// middleware.ts
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export const config = {
   matcher: [
@@ -10,19 +11,21 @@ export const config = {
 export default function middleware(req: NextRequest) {
   const url = req.nextUrl;
   
-  // 🚨 NEW: Read the custom header from our Cloudflare Worker first!
+  // Read header injected by Cloudflare Worker first, then fallback to host
   let hostname = req.headers.get("X-Subdomain-Host") || req.headers.get("host") || "";
   hostname = hostname.replace("www.", ""); 
 
   const mainDomains = ["localhost:3000", "nexpetcare.online"];
 
-  // 1. Map subdomains: dogvanaokotoks.nexpetcare.online -> /[slug]
-  if (hostname.endsWith('.nexpetcare.online') && hostname !== 'nexpetcare.online') {
-    const subdomain = hostname.replace('.nexpetcare.online', '');
+  // 1. Subdomain routing: doggieteethcleaning.nexpetcare.online -> /[slug]
+  if (hostname.endsWith(".nexpetcare.online") && hostname !== "nexpetcare.online") {
+    const subdomain = hostname.replace(".nexpetcare.online", "");
+    
+    // Rewrite path to target app/[slug]/page.tsx internally
     return NextResponse.rewrite(new URL(`/${subdomain}${url.pathname}`, req.url));
   }
 
-  // 2. Map completely custom domains: fluffys-salon.com -> /live/domain/[hostname]
+  // 2. Custom Domain routing: fluffys-salon.com
   if (!mainDomains.includes(hostname)) {
     return NextResponse.rewrite(new URL(`/live/domain/${hostname}${url.pathname}`, req.url));
   }
