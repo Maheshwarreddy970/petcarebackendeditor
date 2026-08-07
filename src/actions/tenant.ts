@@ -2,19 +2,7 @@
 
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-
-export async function deployWebsiteAction(slug: string) {
-  try {
-    const websiteRef = doc(db, "websites", slug);
-    await updateDoc(websiteRef, {
-      isDeployed: true,
-      lastDeployed: new Date().toISOString()
-    });
-    return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
-}
+import { revalidateTag, revalidatePath } from "next/cache";
 
 export async function connectCustomDomainAction(slug: string, customDomain: string) {
   try {
@@ -110,6 +98,30 @@ export async function checkDomainStatusAction(slug: string, customDomain: string
   }
 }
 
+export async function deployWebsiteAction(slug: string) {
+  try {
+    const websiteRef = doc(db, "websites", slug);
+    await updateDoc(websiteRef, {
+      isDeployed: true,
+      lastDeployed: new Date().toISOString()
+    });
+
+    // 🚀 Instantly clear the cache for this specific tenant so the 404 goes away!
+    // @ts-ignore - Bypasses Next.js 15 TS bug requiring 2 arguments
+    revalidateTag(`website-${slug}`);
+    // @ts-ignore
+    revalidateTag("website");
+    
+    // 🔥 Bulletproof fallback: natively clear the URL route
+    revalidatePath(`/${slug}`);
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Deploy Error:", error.message);
+    return { success: false, error: error.message };
+  }
+}
+
 export async function saveWebsiteSettingsAction(slug: string, settings: any) {
   try {
     const websiteRef = doc(db, "websites", slug);
@@ -117,6 +129,16 @@ export async function saveWebsiteSettingsAction(slug: string, settings: any) {
       settings,
       lastUpdated: new Date().toISOString()
     });
+
+    // 🚀 Instantly clear the cache when SEO/settings are updated
+    // @ts-ignore - Bypasses Next.js 15 TS bug requiring 2 arguments
+    revalidateTag(`website-${slug}`);
+    // @ts-ignore
+    revalidateTag("website");
+
+    // 🔥 Bulletproof fallback: natively clear the URL route
+    revalidatePath(`/${slug}`);
+
     return { success: true };
   } catch (error: any) {
     console.error("Save Settings Error:", error);
