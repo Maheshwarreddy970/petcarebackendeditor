@@ -18,12 +18,21 @@ export default function Navbar({ data }: { data: any }) {
 
   return (
     <>
-      <div ref={ref} className="hidden sm:absolute top-0 left-0 w-full h-5 pointer-events-none" />
+      {/* 
+        🚀 FIX: Removed 'hidden' (which caused instant trigger) 
+        and changed height to 'h-screen' so it only triggers after 1 full screen of scrolling.
+      */}
+      <div ref={ref} className="absolute top-0 left-0 w-full h-screen pointer-events-none -z-10 bg-transparent" />
 
       {/* DESKTOP TOP NAVIGATION */}
       <nav 
         className="hidden md:block fixed top-0 left-0 w-full z-50 transition-all duration-300"
-     
+        style={{ 
+          backgroundColor: isScrolled ? `${data.bg}E6` : 'transparent', // E6 adds 90% opacity hex
+          backdropFilter: isScrolled ? 'blur(16px)' : 'none',
+          '--nav-link': data.linkColor || '#625b5b',
+          '--nav-hover': data.linkHoverColor || '#1e0c05'
+        } as React.CSSProperties}
       >
         <div className="px-6 md:px-12 lg:px-24 xl:px-40 py-3 flex items-center justify-between relative">
           
