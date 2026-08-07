@@ -23,12 +23,7 @@ export default function Navbar({ data }: { data: any }) {
       {/* DESKTOP TOP NAVIGATION */}
       <nav 
         className="hidden md:block fixed top-0 left-0 w-full z-50 transition-all duration-300"
-        style={{ 
-          backgroundColor: isScrolled ? `${data.bg}E6` : 'transparent', // E6 adds 90% opacity hex
-          backdropFilter: isScrolled ? 'blur(16px)' : 'none',
-          '--nav-link': data.linkColor || '#625b5b',
-          '--nav-hover': data.linkHoverColor || '#1e0c05'
-        } as React.CSSProperties}
+     
       >
         <div className="px-6 md:px-12 lg:px-24 xl:px-40 py-3 flex items-center justify-between relative">
           
