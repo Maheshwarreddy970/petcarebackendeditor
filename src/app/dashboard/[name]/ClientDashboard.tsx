@@ -327,7 +327,7 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
               </p>
             )}
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap items-center gap-4">
               <button
                 onClick={() => setShowDnsModal(!showDnsModal)}
                 className="bg-white text-black px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-gray-100 transition-colors flex items-center gap-2"
@@ -335,6 +335,22 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
                 <LinkIcon size={16} />
                 {dbData?.customDomain ? "View DNS Records" : "Setup Custom Domain"}
               </button>
+
+              {/* Free Support Booking Link */}
+              <a
+                href="https://cal.com/maheshwar-reddy-20/nexpetcare-demo"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-blue-800/50 border border-blue-400/50 text-white px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors flex items-center gap-2"
+              >
+                <Calendar size={16} /> {/* Ensure you import { Calendar } from 'lucide-react' */}
+                Book Free 1-on-1 Setup Call
+              </a>
+
+              {/* Optional small text to emphasize that it's free/helpful */}
+              <span className="text-xs text-blue-200/70 max-w-[200px] leading-tight">
+                Stuck on DNS or have questions? Get completely free personal support.
+              </span>
             </div>
           </div>
         </div>
