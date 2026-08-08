@@ -13,7 +13,7 @@ export default function HeroSection({ data }: { data: any }) {
         <section
             id='#home'
             className="relative w-full lg:min-h-[115vh] h-screen flex md:items-center items-end overflow-hidden"
-            style={{ backgroundColor: data.bg }} 
+            style={{ backgroundColor: data.bg }}
         >
             {data.image && (
                 <img
@@ -26,15 +26,14 @@ export default function HeroSection({ data }: { data: any }) {
             {/* NEW: Gradient Overlay */}
             {/* This creates a smooth fade (white to transparent) behind the text. 
                 It fades from the bottom up on mobile, and left to right on desktop. */}
-            <div className="absolute inset-0 z-[5] bg-gradient-to-t from-white/90 via-white/60 to-transparent md:bg-gradient-to-r md:from-white/90 md:via-white/40 md:to-transparent pointer-events-none" />
-
+            <div className="absolute inset-0 z-[5] bg-gradient-to-t from-white/90 via-white/60 to-transparent md:hidden pointer-events-none" />
             <div className="relative z-10 w-full mx-auto px-6 md:px-12 lg:px-0 lg:ml-[10%]">
                 <div className="flex flex-col max-w-[620px] mb-14 md:mb-0 py-20">
-                    
+
                     <div className="flex flex-col gap-6 md:gap-8">
                         {/* Removed text-shadows, the gradient overlay handles legibility now */}
                         <h1
-                            className="text-4xl font-semibold md:text-6xl lg:text-[80px] leading-[1.1] tracking-[-2px] lg:tracking-[-5px]"
+                            className="text-4xl font-semibold md:font-medium md:text-6xl  leading-[1.1] tracking-[-2px] lg:tracking-[-5px]"
                             style={{ color: data.headingColor }}
                             dangerouslySetInnerHTML={{ __html: data.heading || "" }}
                         />
