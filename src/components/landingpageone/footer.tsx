@@ -8,18 +8,29 @@ export default function Footer({ data }: { data: any }) {
     const info = data.info || {};
     const socials = data.socials || {};
 
+    // Check if map URL exists
+    const hasMap = !!info.mapEmbedUrl;
+
     return (
-        <footer 
-        id='#footer'
+        <footer
+            id='#footer'
             className="px-6 pt-28 pb-16 font-sans overflow-hidden"
             style={{ backgroundColor: data.bg }}
         >
             <div className="max-w-7xl mx-auto flex flex-col gap-16">
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 items-start">
+                {/* 
+                  🔥 DYNAMIC GRID:
+                  If Map exists -> 12 column layout.
+                  If NO Map -> standard 4 column layout.
+                */}
+                <div className={cn(
+                    "grid grid-cols-1 sm:grid-cols-2 gap-10 items-start",
+                    hasMap ? "lg:grid-cols-12" : "md:grid-cols-4"
+                )}>
 
                     {/* Logo */}
-                    <div>
+                    <div className={cn(hasMap && "sm:col-span-2 lg:col-span-3")}>
                         <div className="flex items-center gap-3">
                             <a href="#" className="group hover:opacity-80 transition-opacity">
                                 {logo.src ? (
@@ -32,14 +43,14 @@ export default function Footer({ data }: { data: any }) {
                     </div>
 
                     {/* Quick Links */}
-                    <div>
+                    <div className={cn(hasMap && "lg:col-span-2")}>
                         <nav aria-label="Quick links">
                             <h4 className="text-sm font-normal mb-5 tracking-wide" style={{ color: data.mutedColor }}>Quick Links</h4>
                             <ul className="space-y-4">
                                 {[{ label: "About", href: "#" }, { label: "Services", href: "#" }, { label: "Contact", href: "#" }].map((link, index) => (
                                     <li key={index}>
-                                        <a 
-                                            href={link.href} 
+                                        <a
+                                            href={link.href}
                                             className="text-base font-medium hover:opacity-75 transition-opacity"
                                             style={{ color: data.textColor }}
                                         >
@@ -52,14 +63,14 @@ export default function Footer({ data }: { data: any }) {
                     </div>
 
                     {/* Legal */}
-                    <div>
+                    <div className={cn(hasMap && "lg:col-span-2")}>
                         <nav aria-label="Legal documents">
                             <h4 className="text-sm font-normal mb-5 tracking-wide" style={{ color: data.mutedColor }}>Legal</h4>
                             <ul className="space-y-4">
                                 {[{ label: "Terms & Conditions", href: "#" }, { label: "Privacy Policy", href: "#" }].map((link, index) => (
                                     <li key={index}>
-                                        <a 
-                                            href={link.href} 
+                                        <a
+                                            href={link.href}
                                             className="text-base font-medium hover:opacity-75 transition-opacity"
                                             style={{ color: data.textColor }}
                                         >
@@ -72,7 +83,7 @@ export default function Footer({ data }: { data: any }) {
                     </div>
 
                     {/* Contact Info */}
-                    <div>
+                    <div className={cn(hasMap && "lg:col-span-2")}>
                         <div>
                             <h4 className="text-sm font-normal mb-5 tracking-wide" style={{ color: data.mutedColor }}>Our Info</h4>
                             <address className="not-italic space-y-4 text-base font-normal leading-relaxed" style={{ color: data.textColor }}>
@@ -95,8 +106,42 @@ export default function Footer({ data }: { data: any }) {
                         </div>
                     </div>
 
-                </div>
+                    {/* 🗺️ Google Map (Only renders if mapEmbedUrl is provided) */}
 
+                </div>
+                {hasMap && (
+                    <div className="w-full flex flex-col mt-4">
+                        <h4
+                            className="text-sm font-semibold mb-4 tracking-wider uppercase"
+                            style={{ color: data.mutedColor }}
+                        >
+                            Location
+                        </h4>
+
+                        {/* Map Container */}
+                        <div className="relative w-full h-[300px] bg-slate-100 rounded-2xl overflow-hidden border border-black/5 shadow-sm hover:shadow-md transition-shadow duration-300 group">
+
+                            {/* Optional Loading Placeholder (Visible before iframe loads) */}
+                            <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">
+                                Loading map...
+                            </div>
+
+                            <iframe
+                                src={info.mapEmbedUrl}
+                                title="Business Location Map"
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                allowFullScreen
+                                loading="lazy"
+                                referrerPolicy="strict-origin-when-cross-origin"
+                                className="absolute inset-0 w-full h-full z-10     transition-all duration-700 ease-in-out"
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* Bottom Footer Section */}
                 <div className="pt-8 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <p className="text-sm text-center sm:text-left" style={{ color: data.mutedColor }}>
                         {data.copyright}
@@ -104,8 +149,8 @@ export default function Footer({ data }: { data: any }) {
 
                     <div className="flex items-center gap-2.5">
                         {socials.facebook && (
-                            <a 
-                                href={socials.facebook} 
+                            <a
+                                href={socials.facebook}
                                 className="w-[26px] h-[26px] rounded-full flex items-center justify-center transition-transform hover:scale-105"
                                 style={{ backgroundColor: data.iconBg, color: data.iconText }}
                             >
@@ -113,8 +158,8 @@ export default function Footer({ data }: { data: any }) {
                             </a>
                         )}
                         {socials.instagram && (
-                            <a 
-                                href={socials.instagram} 
+                            <a
+                                href={socials.instagram}
                                 className="w-[26px] h-[26px] rounded-full flex items-center justify-center transition-transform hover:scale-105"
                                 style={{ backgroundColor: data.iconBg, color: data.iconText }}
                             >
